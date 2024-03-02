@@ -14,7 +14,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.radio_marl.app",
+      "bundleIdentifier": "com.radio-marl.app",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
