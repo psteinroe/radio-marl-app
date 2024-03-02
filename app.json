@@ -14,7 +14,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.radio-marl.app",
+      "bundleIdentifier": "com.radio_marl.app",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.radio-marl.app"
+      "package": "com.radio_marl.app"
     },
     "web": {
       "bundler": "metro",
