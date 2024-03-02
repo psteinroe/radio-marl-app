@@ -1,0 +1,68 @@
+name: Deploy Native
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-main:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    name: Deploy main
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    environment: main
+    env:
+      ENV: ${{ secrets.ENV }}
+      SHA: ${{ github.sha }}
+
+    steps:
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup repo
+        uses: ./.github/actions/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Deploy
+        run: bun deploy:native
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./main.apk
+
+  deploy-production:
+    if: ${{ github.ref == 'refs/heads/production' }}
+    name: Deploy production
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      ENV: ${{ secrets.ENV }}
+      SHA: ${{ github.sha }}
+
+    steps:
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup monorepo
+        uses: ./.github/actions/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: 🚀 Deploy
+        run: bun deploy:native
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./production.apk

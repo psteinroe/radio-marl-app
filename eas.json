@@ -1,0 +1,55 @@
+{
+  "build": {
+    "dev-client-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {},
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "dev-client": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {}
+    },
+    "main": {
+      "distribution": "internal",
+      "channel": "dev",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {},
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "channel": "production",
+      "env": {},
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "production",
+        "releaseStatus": "completed"
+      },
+      "ios": {
+        "appleId": "philipp@steinroetter.com",
+        "ascAppId": "",
+        "appleTeamId": ""
+      }
+    }
+  }
+}

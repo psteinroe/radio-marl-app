@@ -11,7 +11,7 @@
     "start": "NODE_ENV=development expo start --dev-client",
     "start:ios": "NODE_ENV=development expo start --ios --dev-client",
     "start:android": "NODE_ENV=development expo start --android --dev-client",
-    "deploy:native": "if [ \"$ENV\" = \"dev\" ]; then eas build --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && pnpm run build:all-dev-clients && eas build --profile=$ENV --message=$SHA --platform=android --non-interactive --no-wait --local --output=dev.apk; else eas build --auto-submit --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && eas build --profile=$ENV --message=$SHA --platform android --non-interactive --no-wait --local --output=production.aab && eas submit -e production -p android --path=production.aab --non-interactive --no-wait; fi",
+    "deploy:native": "if [ \"$ENV\" = \"main\" ]; then eas build --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && pnpm run build:all-dev-clients && eas build --profile=$ENV --message=$SHA --platform=android --non-interactive --no-wait --local --output=main.apk; else eas build --auto-submit --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && eas build --profile=$ENV --message=$SHA --platform android --non-interactive --no-wait --local --output=production.aab && eas submit -e production -p android --path=production.aab --non-interactive --no-wait; fi",
     "deploy": "eas update --auto --non-interactive",
     "typecheck": "tsc --pretty --noEmit",
     "format:write": "prettier --write --ignore-path .gitignore .",
