@@ -3,19 +3,27 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "test": "jest --watchAll"
-  },
-  "jest": {
-    "preset": "jest-expo"
+    "install:dev-client-ios-simulator": "NODE_ENV=development eas build:run -p ios --latest",
+    "install:dev-client-android-simulator": "NODE_ENV=development eas build:run -p android --latest",
+    "build:all-dev-clients": "pnpm run build:dev-client-simulator && pnpm run build:dev-client",
+    "build:dev-client-simulator": "eas build --profile dev-client-simulator --platform all --non-interactive --no-wait",
+    "build:dev-client": "eas build --profile dev-client --platform all --non-interactive --no-wait",
+    "start": "NODE_ENV=development expo start --dev-client",
+    "start:ios": "NODE_ENV=development expo start --ios --dev-client",
+    "start:android": "NODE_ENV=development expo start --android --dev-client",
+    "deploy:native": "if [ \"$ENV\" = \"dev\" ]; then eas build --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && pnpm run build:all-dev-clients && eas build --profile=$ENV --message=$SHA --platform=android --non-interactive --no-wait --local --output=dev.apk; else eas build --auto-submit --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && eas build --profile=$ENV --message=$SHA --platform android --non-interactive --no-wait --local --output=production.aab && eas submit -e production -p android --path=production.aab --non-interactive --no-wait; fi",
+    "deploy": "eas update --auto --non-interactive",
+    "typecheck": "tsc --pretty --noEmit",
+    "format:write": "prettier --write --ignore-path .gitignore .",
+    "format:check": "prettier --check --ignore-path .gitignore .",
+    "eas-build-post-install": "mkdir -p ./node_modules/.cache/nativewind/ && touch ./node_modules/.cache/nativewind/output.css && sudo chmod 755 '../../node_modules/.bin/tailwindcss'",
+    "eas-build-pre-install": "npm i -g bun"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.0.2",
     "expo": "~49.0.18",
+    "expo-av": "~13.4.1",
     "expo-font": "~11.4.0",
     "expo-linking": "~5.0.2",
     "expo-router": "^2.0.0",
@@ -23,19 +31,22 @@
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.2",
+    "lucide-react-native": "^0.344.0",
+    "nativewind": "4.0.22",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-gesture-handler": "~2.12.0",
+    "react-native-reanimated": "3.3.0",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "react-native-web": "~0.19.6"
+    "react-native-track-player": "^4.0.1",
+    "react-native-web": "~0.19.6",
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.14",
-    "jest": "^29.2.1",
-    "jest-expo": "~49.0.0",
     "react-test-renderer": "18.2.0",
     "typescript": "^5.1.3"
   },
