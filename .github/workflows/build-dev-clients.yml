@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Build dev clients
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
