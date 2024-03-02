@@ -40,3 +40,4 @@ runs:
 
     - name: 📦 Install dependencies
       run: bun install
+      shell: bash
