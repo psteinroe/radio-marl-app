@@ -1,0 +1,30 @@
+name: Build Simulator Dev Clients
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build simulator dev clients
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      ENV: ${{ secrets.ENV }}
+      SHA: ${{ github.sha }}
+
+    steps:
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup repo
+        uses: ./.github/actions/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Deploy
+        run: bun run build:dev-clients-simulator
