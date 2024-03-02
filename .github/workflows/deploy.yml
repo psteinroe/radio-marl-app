@@ -2,22 +2,16 @@ name: Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - production
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  deploy-main:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    name: Deploy main
+  deploy:
+    name: Deploy
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    environment: main
     env:
       ENV: ${{ secrets.ENV }}
       SHA: ${{ github.sha }}
@@ -33,27 +27,4 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🚀 Deploy
-        run: bun deploy
-
-  deploy-production:
-    if: ${{ github.ref == 'refs/heads/production' }}
-    name: Deploy production
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      ENV: ${{ secrets.ENV }}
-      SHA: ${{ github.sha }}
-
-    steps:
-      - name: 🏗 Setup repository
-        uses: actions/checkout@v4
-
-      - name: 🏗 Setup repo
-        uses: ./.github/actions/setup
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: 🚀 Deploy
-        run: bun deploy
+        run: bun run deploy

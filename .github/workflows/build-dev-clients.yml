@@ -1,4 +1,4 @@
-name: Deploy Native
+name: Build Dev Clients
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy Native
+    name: Deploy
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
@@ -27,4 +27,4 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🚀 Deploy
-        run: bun run deploy:native
+        run: bun run build:dev-clients

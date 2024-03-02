@@ -5,19 +5,17 @@
   "scripts": {
     "install:dev-client-ios-simulator": "NODE_ENV=development eas build:run -p ios --latest",
     "install:dev-client-android-simulator": "NODE_ENV=development eas build:run -p android --latest",
-    "build:all-dev-clients": "pnpm run build:dev-client-simulator && pnpm run build:dev-client",
+    "build:dev-clients": "bun run build:dev-client-simulator && bun run build:dev-client",
     "build:dev-client-simulator": "eas build --profile dev-client-simulator --platform all --non-interactive --no-wait",
     "build:dev-client": "eas build --profile dev-client --platform all --non-interactive --no-wait",
     "start": "NODE_ENV=development expo start --dev-client",
     "start:ios": "NODE_ENV=development expo start --ios --dev-client",
     "start:android": "NODE_ENV=development expo start --android --dev-client",
-    "deploy:native": "if [ \"$ENV\" = \"main\" ]; then eas build --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && pnpm run build:all-dev-clients && eas build --profile=$ENV --message=$SHA --platform=android --non-interactive --no-wait --local --output=main.apk; else eas build --auto-submit --profile=$ENV --message=$SHA --platform=ios --non-interactive --no-wait && eas build --profile=$ENV --message=$SHA --platform android --non-interactive --no-wait --local --output=production.aab && eas submit -e production -p android --path=production.aab --non-interactive --no-wait; fi",
+    "deploy:native": "eas build --auto-submit --profile=$ENV --message=$SHA --platform=all --non-interactive --no-wait ",
     "deploy": "eas update --auto --non-interactive",
     "typecheck": "tsc --pretty --noEmit",
     "format:write": "prettier --write --ignore-path .gitignore .",
-    "format:check": "prettier --check --ignore-path .gitignore .",
-    "eas-build-post-install": "mkdir -p ./node_modules/.cache/nativewind/ && touch ./node_modules/.cache/nativewind/output.css && sudo chmod 755 '../../node_modules/.bin/tailwindcss'",
-    "eas-build-pre-install": "npm i -g bun"
+    "format:check": "prettier --check --ignore-path .gitignore ."
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
