@@ -1,0 +1,74 @@
+import { useEffect, useState } from "react";
+import TrackPlayer, {
+  AppKilledPlaybackBehavior,
+  Capability,
+  RepeatMode,
+} from "react-native-track-player";
+
+export const DefaultRepeatMode = RepeatMode.Queue;
+export const DefaultAudioServiceBehaviour =
+  AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification;
+
+export function useSetupPlayer() {
+  const [playerReady, setPlayerReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    let unmounted = false;
+    (async () => {
+      await setupPlayer({
+        autoHandleInterruptions: true,
+      });
+
+      await TrackPlayer.updateOptions({
+        android: {
+          appKilledPlaybackBehavior: DefaultAudioServiceBehaviour,
+        },
+        capabilities: [Capability.Play, Capability.Pause],
+        compactCapabilities: [Capability.Play, Capability.Pause],
+        progressUpdateEventInterval: 2,
+      });
+      await TrackPlayer.setRepeatMode(DefaultRepeatMode);
+
+      if (unmounted) return;
+
+      setPlayerReady(true);
+
+      const queue = await TrackPlayer.getQueue();
+
+      if (unmounted) return;
+
+      if (queue.length <= 0) {
+        await TrackPlayer.add([
+          {
+            url: "https://c32.radioboss.fm:18152/stream",
+            title: "Radio Marl",
+            artwork: "https://c32.radioboss.fm/w/artwork/152.jpg",
+            isLive: true,
+          },
+        ]);
+      }
+    })();
+    return () => {
+      unmounted = true;
+    };
+  }, []);
+  return playerReady;
+}
+
+const setupPlayer = async (
+  options: Parameters<typeof TrackPlayer.setupPlayer>[0]
+) => {
+  const setup = async () => {
+    try {
+      await TrackPlayer.setupPlayer(options);
+    } catch (error) {
+      return (error as Error & { code?: string }).code;
+    }
+  };
+  while ((await setup()) === "android_cannot_setup_player_in_background") {
+    // A timeout will mostly only execute when the app is in the foreground,
+    // and even if we were in the background still, it will reject the promise
+    // and we'll try again:
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
+  }
+};
