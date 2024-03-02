@@ -27,7 +27,7 @@ runs:
     - name: 🏗 Setup Bun
       uses: oven-sh/setup-bun@v1
       with:
-        version: ${{ inputs.bun-version }}
+        bun-version: ${{ inputs.bun-version }}
 
     - name: 🏗 Setup Expo
       if: ${{ inputs.expo-token }}

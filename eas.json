@@ -46,9 +46,7 @@
         "releaseStatus": "completed"
       },
       "ios": {
-        "appleId": "philipp@steinroetter.com",
-        "ascAppId": "",
-        "appleTeamId": ""
+        "appleId": "philipp@steinroetter.com"
       }
     }
   }
