@@ -5,12 +5,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "radio-marl",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#EEF2F2"
+      "backgroundColor": "#EEF2f2"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,14 +23,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#EEF2f2"
       },
       "package": "com.radio_marl.app"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.ico"
     },
     "plugins": ["expo-router"],
     "experiments": {
