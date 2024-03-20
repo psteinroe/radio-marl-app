@@ -10,7 +10,13 @@ export {
 
 import "../assets/global.css";
 import { PlaybackService } from "../lib/playback";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useSetupPlayer } from "../lib/use-setup-player";
+import {
+  nowPlayingInfoOpts,
+  useNowPlayingInfo,
+} from "../lib/use-now-playing-info";
 
 const queryClient = new QueryClient();
 
@@ -29,34 +35,35 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  const isPlayerReady = useSetupPlayer();
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && isPlayerReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isPlayerReady]);
 
-  if (!loaded) {
+  if (!loaded || !isPlayerReady) {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RootLayoutNav />
+    </QueryClientProvider>
+  );
 }
 
 function RootLayoutNav() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <SafeAreaProvider>
       <Stack>
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-          name="index"
-        />
+        <Stack.Screen name="index" />
         <Stack.Screen
           options={{
             headerShown: true,
@@ -65,6 +72,6 @@ function RootLayoutNav() {
           name="tracklist"
         />
       </Stack>
-    </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

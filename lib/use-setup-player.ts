@@ -1,13 +1,40 @@
 import { useEffect, useState } from "react";
 import TrackPlayer, {
+  AddTrack,
   AppKilledPlaybackBehavior,
   Capability,
   RepeatMode,
+  usePlaybackState,
 } from "react-native-track-player";
 
 export const DefaultRepeatMode = RepeatMode.Queue;
 export const DefaultAudioServiceBehaviour =
   AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification;
+
+const TRACK: AddTrack = {
+  url: "https://c32.radioboss.fm:18152/stream",
+  title: "Radio Marl",
+  artwork: "https://c32.radioboss.fm/w/artwork/152.jpg",
+  isLive: true,
+};
+
+export function useResetOnError() {
+  const playerState = usePlaybackState();
+
+  useEffect(() => {
+    const addTrack = async () => {
+      const queue = await TrackPlayer.getQueue();
+
+      if (queue.length <= 0) {
+        await TrackPlayer.add([TRACK]);
+      }
+    };
+    if (playerState.state === "error") {
+      TrackPlayer.reset();
+      addTrack();
+    }
+  }, [playerState.state]);
+}
 
 export function useSetupPlayer() {
   const [playerReady, setPlayerReady] = useState<boolean>(false);
@@ -23,8 +50,8 @@ export function useSetupPlayer() {
         android: {
           appKilledPlaybackBehavior: DefaultAudioServiceBehaviour,
         },
-        capabilities: [Capability.Play, Capability.Pause],
-        compactCapabilities: [Capability.Play, Capability.Pause],
+        capabilities: [Capability.Play, Capability.Stop],
+        compactCapabilities: [Capability.Play, Capability.Stop],
         progressUpdateEventInterval: 2,
       });
       await TrackPlayer.setRepeatMode(DefaultRepeatMode);
@@ -38,14 +65,7 @@ export function useSetupPlayer() {
       if (unmounted) return;
 
       if (queue.length <= 0) {
-        await TrackPlayer.add([
-          {
-            url: "https://c32.radioboss.fm:18152/stream",
-            title: "Radio Marl",
-            artwork: "https://c32.radioboss.fm/w/artwork/152.jpg",
-            isLive: true,
-          },
-        ]);
+        await TrackPlayer.add([TRACK]);
       }
     })();
     return () => {

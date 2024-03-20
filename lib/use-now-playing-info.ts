@@ -13,16 +13,16 @@ export type NowPlayingInfo = {
   currenttrack_title: string;
 };
 
+export const nowPlayingInfoOpts = {
+  queryKey: ["nowplayinginfo"],
+  refetchInterval: 1000,
+  queryFn: async () => {
+    const res = await fetch("https://c32.radioboss.fm/w/nowplayinginfo?u=152");
+    if (!res.ok) throw new Error("Network response was not ok");
+    return res.json() as Promise<NowPlayingInfo>;
+  },
+};
+
 export const useNowPlayingInfo = () => {
-  return useQuery({
-    queryKey: ["nowplayinginfo"],
-    refetchInterval: 1000,
-    queryFn: async () => {
-      const res = await fetch(
-        "https://c32.radioboss.fm/w/nowplayinginfo?u=152"
-      );
-      if (!res.ok) throw new Error("Network response was not ok");
-      return res.json() as Promise<NowPlayingInfo>;
-    },
-  });
+  return useQuery(nowPlayingInfoOpts);
 };
