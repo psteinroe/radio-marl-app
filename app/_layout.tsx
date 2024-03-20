@@ -13,10 +13,6 @@ import { PlaybackService } from "../lib/playback";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSetupPlayer } from "../lib/use-setup-player";
-import {
-  nowPlayingInfoOpts,
-  useNowPlayingInfo,
-} from "../lib/use-now-playing-info";
 
 const queryClient = new QueryClient();
 

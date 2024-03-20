@@ -21,6 +21,7 @@ import { CustomFooter } from "../components/ui/custom-footer";
 import { Facebook } from "../components/icons/facebook";
 import { useEffect, useState } from "react";
 import { useResetOnError } from "../lib/use-setup-player";
+import { useRecentTrackList } from "../lib/use-recent-tracklist";
 
 const { width, height } = Dimensions.get("window");
 
@@ -31,6 +32,8 @@ export default function Home() {
   const { push } = useRouter();
 
   const playerState = usePlaybackState();
+
+  useRecentTrackList();
 
   useResetOnError();
 

@@ -8,7 +8,15 @@ export type TrackInfo = {
   artworkid: string;
 };
 
-export type TrackList = TrackInfo[];
+export type TrackInfoParsed = {
+  title: string;
+  tracktitle: string;
+  trackartist: string;
+  started: Date;
+  artworkid: string;
+};
+
+export type TrackList = TrackInfoParsed[];
 
 export const useRecentTrackList = () => {
   return useQuery({
@@ -18,7 +26,11 @@ export const useRecentTrackList = () => {
         "https://c32.radioboss.fm/w/recenttrackslist?u=152"
       );
       if (!res.ok) throw new Error("Network response was not ok");
-      return res.json() as Promise<TrackList>;
+      const trackInfo: TrackInfo[] = await res.json();
+      return trackInfo.map<TrackInfoParsed>((track) => ({
+        ...track,
+        started: new Date(track.started),
+      }));
     },
   });
 };

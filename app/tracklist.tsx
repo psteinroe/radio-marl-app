@@ -8,7 +8,6 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useRecentTrackList } from "../lib/use-recent-tracklist";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Subtle } from "../components/typography/Subtle";
 import { Stack, useRouter } from "expo-router";
 import { X } from "lucide-react-native";
 import { useState } from "react";
@@ -61,6 +60,14 @@ export default function Tracklist() {
             return (
               <View className="mb-6 flex-row items-center justify-center px-10">
                 <View className="flex-1 self-center">
+                  <Text
+                    className="text-sm"
+                    style={{
+                      color: "#112022",
+                    }}
+                  >
+                    {item.started.toLocaleString()}
+                  </Text>
                   <View className="flex flex-row items-center">
                     {index === 0 && (
                       <Playing
