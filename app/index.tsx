@@ -13,7 +13,7 @@ import TrackPlayer, {
 } from "react-native-track-player";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
 import { WhatsApp } from "../components/icons/whatsapp";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RadioMarlHeader } from "../components/icons/radio-marl-header";
 import { CustomHeader } from "../components/ui/custom-header";
@@ -28,6 +28,7 @@ const HEADER_LOGO_RATIO = 802 / 87;
 
 export default function Home() {
   const { playing } = useIsPlaying();
+  const { push } = useRouter();
 
   const playerState = usePlaybackState();
 
@@ -105,7 +106,7 @@ export default function Home() {
           <Text
             className="text-lg text-center"
             style={{
-              marginTop: height * 0.002,
+              marginTop: height * 0.001,
               maxWidth: width * 0.85,
               color: "#B3B3B3",
             }}
@@ -116,11 +117,11 @@ export default function Home() {
             onPress={playing ? TrackPlayer.stop : TrackPlayer.play}
             onPressIn={() => setActiveButton("playpause")}
             onPressOut={() => setActiveButton(false)}
-            className="rounded-full h-[84px] w-[84px] flex flex-row justify-center items-center text-center"
+            className="rounded-full h-[80px] w-[80px] flex flex-row justify-center items-center text-center"
             style={{
               backgroundColor:
                 activeButton === "playpause" ? "#7731EC" : "#112022",
-              marginTop: height * 0.02,
+              marginTop: height * 0.025,
             }}
           >
             {playerState.state === "buffering" ? (
@@ -181,6 +182,7 @@ export default function Home() {
               </Pressable>
             </View>
             <Pressable
+              onPress={() => push("./tracklist")}
               onPressIn={() => setActiveButton("tracklist")}
               onPressOut={() => setActiveButton(false)}
               className="flex flex-col items-center justify-center rounded-full px-4 py-3"

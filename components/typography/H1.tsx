@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Text, TextProps } from 'react-native';
+import { FC } from "react";
+import { Text, TextProps } from "react-native";
 
 export const H1: FC<TextProps> = ({ children, className, ...props }) => (
   <Text
