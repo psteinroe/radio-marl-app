@@ -44,6 +44,12 @@
         "projectId": "db61a7c0-2fcb-4b6d-91f6-65dd4369e3c3"
       }
     },
-    "owner": "radio-marl"
+    "owner": "radio-marl",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/db61a7c0-2fcb-4b6d-91f6-65dd4369e3c3"
+    }
   }
 }

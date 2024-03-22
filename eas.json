@@ -17,19 +17,8 @@
       "env": {}
     },
     "main": {
-      "distribution": "internal",
-      "channel": "dev",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {},
-      "ios": {
-        "resourceClass": "m-medium"
-      }
-    },
-    "production": {
       "distribution": "store",
-      "channel": "production",
+      "channel": "main",
       "env": {},
       "android": {
         "buildType": "app-bundle"
@@ -40,13 +29,14 @@
     }
   },
   "submit": {
-    "production": {
+    "main": {
       "android": {
         "track": "production",
         "releaseStatus": "completed"
       },
       "ios": {
-        "appleId": "philipp@steinroetter.com"
+        "appleId": "philipp@steinroetter.com",
+        "appleTeamId": "J947GRJ97T"
       }
     }
   }
