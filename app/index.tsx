@@ -11,6 +11,7 @@ import TrackPlayer, {
   useIsPlaying,
   usePlaybackState,
 } from "react-native-track-player";
+import * as Linking from "expo-linking";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
 import { WhatsApp } from "../components/icons/whatsapp";
 import { Stack, useRouter } from "expo-router";
@@ -140,6 +141,11 @@ export default function Home() {
           <View className="flex flex-row justify-between items-center w-full px-6">
             <View className="flex flex-row items-center gap-x-6">
               <Pressable
+                onPress={() =>
+                  Linking.openURL(
+                    "https://chat.whatsapp.com/DpRbHu7DLEvG9zbkeZXknN"
+                  )
+                }
                 onPressIn={() => setActiveButton("whatsapp")}
                 onPressOut={() => setActiveButton(false)}
               >
@@ -152,6 +158,9 @@ export default function Home() {
                 />
               </Pressable>
               <Pressable
+                onPress={() =>
+                  Linking.openURL("https://www.facebook.com/marlradio")
+                }
                 onPressIn={() => setActiveButton("facebook")}
                 onPressOut={() => setActiveButton(false)}
               >
@@ -164,6 +173,9 @@ export default function Home() {
                 />
               </Pressable>
               <Pressable
+                onPress={() =>
+                  Linking.openURL("mailto:thomas.wilke@radio-marl.de")
+                }
                 onPressIn={() => setActiveButton("mail")}
                 onPressOut={() => setActiveButton(false)}
               >
@@ -174,6 +186,7 @@ export default function Home() {
                 />
               </Pressable>
               <Pressable
+                onPress={() => Linking.openURL("https://marl-radio.de")}
                 onPressIn={() => setActiveButton("globe")}
                 onPressOut={() => setActiveButton(false)}
               >
