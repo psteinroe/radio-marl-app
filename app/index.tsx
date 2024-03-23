@@ -86,8 +86,8 @@ export default function Home() {
             }}
             alt="cover art"
             style={{
-              width: width * 0.85,
-              height: width * 0.85,
+              width: height * 0.38,
+              height: height * 0.38,
             }}
           />
           <View

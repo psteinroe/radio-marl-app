@@ -1,4 +1,7 @@
 {
+  "cli": {
+    "appVersionSource": "remote"
+  },
   "build": {
     "dev-client-simulator": {
       "developmentClient": true,
@@ -20,6 +23,7 @@
       "distribution": "store",
       "channel": "main",
       "env": {},
+      "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
       },
