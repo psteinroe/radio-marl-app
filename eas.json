@@ -1,6 +1,7 @@
 {
   "cli": {
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "dev-client-simulator": {
@@ -39,7 +40,7 @@
         "releaseStatus": "completed"
       },
       "ios": {
-        "appleId": "philipp@steinroetter.com",
+        "appleId": "tom@jellybean.de",
         "appleTeamId": "J947GRJ97T"
       }
     }
