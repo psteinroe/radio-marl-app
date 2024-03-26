@@ -36,7 +36,7 @@
   "submit": {
     "main": {
       "android": {
-        "track": "production",
+        "track": "main",
         "releaseStatus": "completed"
       },
       "ios": {
