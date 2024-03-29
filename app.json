@@ -14,6 +14,9 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "bundleIdentifier": "com.radio-marl.app",
       "supportsTablet": false,
       "infoPlist": {
