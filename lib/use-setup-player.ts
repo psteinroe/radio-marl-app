@@ -14,7 +14,7 @@ export const DefaultAudioServiceBehaviour =
 const TRACK: AddTrack = {
   url: "https://c32.radioboss.fm:18152/stream",
   title: "Radio Marl",
-  artwork: "https://c32.radioboss.fm/w/artwork/152.jpg",
+  artwork: require("../assets/images/icon.png"),
   isLive: true,
 };
 

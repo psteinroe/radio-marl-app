@@ -99,7 +99,7 @@ export default function Home() {
             }}
           >
             <Text
-              className="text-3xl font-semibold transition-colors text-center w-full"
+              className="text-3xl font-semibold transition-colors text-center w-full truncate"
               style={{
                 color: "#112022",
               }}
@@ -112,7 +112,7 @@ export default function Home() {
             style={{
               marginTop: height * 0.001,
               maxWidth: width * 0.85,
-              color: "#B3B3B3",
+              color: "#6F6F6F",
             }}
           >
             {data?.currenttrack_artist || " "}

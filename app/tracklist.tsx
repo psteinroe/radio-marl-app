@@ -59,6 +59,14 @@ export default function Tracklist() {
           renderItem={({ item, index }) => {
             return (
               <View className="mb-6 flex-row items-center justify-center px-10">
+                {index === 0 && (
+                  <Playing
+                    className="mr-1"
+                    fill="#7731EC"
+                    width={16}
+                    height={16}
+                  />
+                )}
                 <View className="flex-1 self-center">
                   <Text
                     className="text-sm"
@@ -69,14 +77,6 @@ export default function Tracklist() {
                     {item.started.toLocaleString()}
                   </Text>
                   <View className="flex flex-row items-center">
-                    {index === 0 && (
-                      <Playing
-                        className="mr-1"
-                        fill="#7731EC"
-                        width={16}
-                        height={16}
-                      />
-                    )}
                     <Text
                       className="text-2xl"
                       style={{
@@ -89,7 +89,7 @@ export default function Tracklist() {
                   <Text
                     className="text-base"
                     style={{
-                      color: "#B3B3B3",
+                      color: "#6F6F6F",
                     }}
                   >
                     {item.trackartist}
