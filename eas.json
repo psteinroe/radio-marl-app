@@ -1,49 +1,49 @@
 {
-  "cli": {
-    "appVersionSource": "remote",
-    "promptToConfigurePushNotifications": false
-  },
-  "build": {
-    "dev-client-simulator": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "env": {},
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true
-      }
-    },
-    "dev-client": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "env": {}
-    },
-    "main": {
-      "distribution": "store",
-      "channel": "main",
-      "env": {},
-      "autoIncrement": true,
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "ios": {
-        "resourceClass": "m1-medium"
-      }
-    }
-  },
-  "submit": {
-    "main": {
-      "android": {
-        "track": "production",
-        "releaseStatus": "completed"
-      },
-      "ios": {
-        "appleId": "tom@jellybean.de",
-        "appleTeamId": "J947GRJ97T",
-        "ascAppId": "6479979235"
-      }
-    }
-  }
+	"cli": {
+		"appVersionSource": "remote",
+		"promptToConfigurePushNotifications": false
+	},
+	"build": {
+		"dev-client-simulator": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"env": {},
+			"android": {
+				"buildType": "apk"
+			},
+			"ios": {
+				"simulator": true
+			}
+		},
+		"dev-client": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"env": {}
+		},
+		"main": {
+			"distribution": "store",
+			"channel": "main",
+			"env": {},
+			"autoIncrement": true,
+			"android": {
+				"buildType": "app-bundle"
+			},
+			"ios": {
+				"resourceClass": "m1-medium"
+			}
+		}
+	},
+	"submit": {
+		"main": {
+			"android": {
+				"track": "production",
+				"releaseStatus": "completed"
+			},
+			"ios": {
+				"appleId": "tom@jellybean.de",
+				"appleTeamId": "J947GRJ97T",
+				"ascAppId": "6479979235"
+			}
+		}
+	}
 }
