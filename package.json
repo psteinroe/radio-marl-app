@@ -5,9 +5,9 @@
 	"scripts": {
 		"install:dev-client-ios-simulator": "NODE_ENV=development eas build:run -p ios --latest",
 		"install:dev-client-android-simulator": "NODE_ENV=development eas build:run -p android --latest",
-		"build:dev-clients": "bun run build:dev-client-simulator && bun run build:dev-client",
+		"build:dev-clients": "bun run build:dev-clients-simulator && bun run build:dev-clients",
 		"build:dev-clients-simulator": "eas build --profile dev-client-simulator --platform all --non-interactive --no-wait",
-		"build:dev-client": "eas build --profile dev-client --platform all --non-interactive --no-wait",
+		"build:dev-clients": "eas build --profile dev-client --platform all --non-interactive --no-wait",
 		"start": "NODE_ENV=development expo start --dev-client",
 		"start:ios": "NODE_ENV=development expo start --ios --dev-client",
 		"start:android": "NODE_ENV=development expo start --android --dev-client",
