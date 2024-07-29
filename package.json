@@ -1,7 +1,7 @@
 {
 	"name": "radio-marl-app",
 	"main": "expo-router/entry",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"scripts": {
 		"install:dev-client-ios-simulator": "NODE_ENV=development eas build:run -p ios --latest",
 		"install:dev-client-android-simulator": "NODE_ENV=development eas build:run -p android --latest",
