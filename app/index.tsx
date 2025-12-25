@@ -22,7 +22,7 @@ import { CustomFooter } from "../components/ui/custom-footer";
 import { CustomHeader } from "../components/ui/custom-header";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
 import { useRecentTrackList } from "../lib/use-recent-tracklist";
-import { useResetOnError } from "../lib/use-setup-player";
+import { TRACK, useResetOnError } from "../lib/use-setup-player";
 
 const { width, height } = Dimensions.get("window");
 
@@ -55,6 +55,17 @@ export default function Home() {
 		| "playpause"
 		| boolean
 	>(false);
+
+	const handlePlayPress = async () => {
+		if (playing) {
+			await TrackPlayer.stop();
+		} else {
+			// Reset and re-add track to force fresh connection to live stream
+			await TrackPlayer.reset();
+			await TrackPlayer.add(TRACK);
+			await TrackPlayer.play();
+		}
+	};
 
 	return (
 		<>
@@ -118,7 +129,7 @@ export default function Home() {
 						{data?.currenttrack_artist || " "}
 					</Text>
 					<Pressable
-						onPress={playing ? TrackPlayer.stop : TrackPlayer.play}
+						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
 						onPressOut={() => setActiveButton(false)}
 						className="rounded-full h-[80px] w-[80px] flex flex-row justify-center items-center text-center"

@@ -11,11 +11,11 @@ export const DefaultRepeatMode = RepeatMode.Queue;
 export const DefaultAudioServiceBehaviour =
 	AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification;
 
-const TRACK: AddTrack = {
+export const TRACK: AddTrack = {
 	url: "https://c32.radioboss.fm:18152/stream",
 	title: "Radio Marl",
 	artwork: require("../assets/images/icon.png"),
-	isLive: true,
+	isLiveStream: true,
 };
 
 export function useResetOnError() {
