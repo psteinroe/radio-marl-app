@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
-import { Globe, ListMusic, Mail, Pause, Play } from "lucide-react-native";
+import { Globe, ListMusic, Mail, Pause, Play, Star } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
@@ -52,6 +52,7 @@ export default function Home() {
 		| "mail"
 		| "globe"
 		| "tracklist"
+		| "songwish"
 		| "playpause"
 		| boolean
 	>(false);
@@ -110,10 +111,11 @@ export default function Home() {
 						}}
 					>
 						<Text
-							className="text-3xl font-semibold transition-colors text-center w-full truncate"
+							className="text-3xl font-semibold text-center w-full"
 							style={{
 								color: "#112022",
 							}}
+							numberOfLines={1}
 						>
 							{data?.currenttrack_title || "Radio Marl"}
 						</Text>
@@ -150,7 +152,7 @@ export default function Home() {
 				</View>
 				<CustomFooter>
 					<View className="flex flex-row justify-between items-center w-full px-6">
-						<View className="flex flex-row items-center gap-x-6">
+						<View className="flex flex-row items-center" style={{ gap: 24 }}>
 							<Pressable
 								onPress={() =>
 									Linking.openURL(
@@ -208,30 +210,58 @@ export default function Home() {
 								/>
 							</Pressable>
 						</View>
-						<Pressable
-							onPress={() => push("./tracklist")}
-							onPressIn={() => setActiveButton("tracklist")}
-							onPressOut={() => setActiveButton(false)}
-							className="flex flex-col items-center justify-center rounded-full px-4 py-3"
-							style={{
-								backgroundColor:
-									activeButton === "tracklist" ? "#7731EC" : "#F5F5F5",
-							}}
-						>
-							<ListMusic
-								width={24}
-								height={24}
-								color={activeButton === "tracklist" ? "white" : "#2E4454"}
-							/>
-							<Text
-								className="text-xs ml-2"
+						<View className="flex flex-row items-center" style={{ gap: 8 }}>
+							<Pressable
+								onPress={() => push("./songwish")}
+								onPressIn={() => setActiveButton("songwish")}
+								onPressOut={() => setActiveButton(false)}
+								className="flex flex-col items-center justify-center rounded-full py-3"
 								style={{
-									color: activeButton === "tracklist" ? "white" : "#2E4454",
+									backgroundColor:
+										activeButton === "songwish" ? "#7731EC" : "#F5F5F5",
+									width: 80,
 								}}
 							>
-								Wiedergabe
-							</Text>
-						</Pressable>
+								<Star
+									width={24}
+									height={24}
+									color={activeButton === "songwish" ? "white" : "#2E4454"}
+								/>
+								<Text
+									className="text-xs"
+									style={{
+										color: activeButton === "songwish" ? "white" : "#2E4454",
+									}}
+								>
+									Wunsch
+								</Text>
+							</Pressable>
+							<Pressable
+								onPress={() => push("./tracklist")}
+								onPressIn={() => setActiveButton("tracklist")}
+								onPressOut={() => setActiveButton(false)}
+								className="flex flex-col items-center justify-center rounded-full py-3"
+								style={{
+									backgroundColor:
+										activeButton === "tracklist" ? "#7731EC" : "#F5F5F5",
+									width: 80,
+								}}
+							>
+								<ListMusic
+									width={24}
+									height={24}
+									color={activeButton === "tracklist" ? "white" : "#2E4454"}
+								/>
+								<Text
+									className="text-xs"
+									style={{
+										color: activeButton === "tracklist" ? "white" : "#2E4454",
+									}}
+								>
+									Wiedergabe
+								</Text>
+							</Pressable>
+						</View>
 					</View>
 				</CustomFooter>
 			</SafeAreaView>

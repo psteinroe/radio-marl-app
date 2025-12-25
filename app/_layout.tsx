@@ -68,6 +68,13 @@ function RootLayoutNav() {
 					}}
 					name="tracklist"
 				/>
+				<Stack.Screen
+					options={{
+						headerShown: true,
+						presentation: "modal",
+					}}
+					name="songwish"
+				/>
 			</Stack>
 		</SafeAreaProvider>
 	);
