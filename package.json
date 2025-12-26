@@ -48,6 +48,7 @@
 		"@babel/core": "^7.24.0",
 		"@biomejs/biome": "1.8.3",
 		"@types/react": "~19.0.14",
+		"babel-preset-expo": "^54.0.9",
 		"react-test-renderer": "19.0.0",
 		"typescript": "^5.8.3"
 	},
@@ -60,11 +61,15 @@
 	"expo": {
 		"doctor": {
 			"reactNativeDirectoryCheck": {
-				"exclude": ["react-native-track-player"]
+				"exclude": [
+					"react-native-track-player"
+				]
 			}
 		},
 		"install": {
-			"exclude": ["@react-navigation/native"]
+			"exclude": [
+				"@react-navigation/native"
+			]
 		}
 	},
 	"private": true
