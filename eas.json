@@ -6,6 +6,7 @@
 	"build": {
 		"dev-client-simulator": {
 			"developmentClient": true,
+			"pnpm": "10.12.1",
 			"distribution": "internal",
 			"env": {},
 			"android": {
@@ -17,11 +18,13 @@
 		},
 		"dev-client": {
 			"developmentClient": true,
+			"pnpm": "10.12.1",
 			"distribution": "internal",
 			"env": {}
 		},
 		"main": {
 			"distribution": "store",
+			"pnpm": "10.12.1",
 			"channel": "main",
 			"env": {},
 			"autoIncrement": true,

@@ -38,6 +38,9 @@ importers:
       expo-linking:
         specifier: ~7.1.7
         version: 7.1.7(expo@53.0.25(@babel/core@7.28.5)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.28.5)(@react-native-community/cli@13.6.9)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.28.5)(@react-native-community/cli@13.6.9)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.6(@babel/core@7.28.5)(@react-native-community/cli@13.6.9)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+      expo-modules-autolinking:
+        specifier: ~2.1.14
+        version: 2.1.14
       expo-router:
         specifier: ~5.1.10
         version: 5.1.10(1d86140aff7b1371c2f75719efe6fdf8)
