@@ -48,7 +48,7 @@
 		"@babel/core": "^7.24.0",
 		"@biomejs/biome": "1.8.3",
 		"@types/react": "~19.0.14",
-		"babel-preset-expo": "^54.0.9",
+		"babel-preset-expo": "^13.0.0",
 		"react-test-renderer": "19.0.0",
 		"typescript": "^5.8.3"
 	},
