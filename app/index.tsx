@@ -114,38 +114,39 @@ export default function Home() {
 					/>
 					<View
 						style={{
-							flexDirection: "row",
-							justifyContent: "center",
+							marginTop: height * 0.025,
+							paddingHorizontal: 24,
 							alignItems: "center",
-							height: 36 * 2,
-							marginTop: height * 0.02,
-							maxWidth: width * 0.85,
+							height: 90,
+							justifyContent: "center",
 						}}
 					>
 						<Text
 							style={{
-								fontSize: 30,
-								fontWeight: "600",
+								fontSize: 24,
+								fontWeight: "700",
 								textAlign: "center",
-								width: "100%",
 								color: "#112022",
+								lineHeight: 32,
 							}}
-							numberOfLines={1}
+							numberOfLines={2}
+							adjustsFontSizeToFit
+							minimumFontScale={0.8}
 						>
 							{data?.currenttrack_title || "Radio Marl"}
 						</Text>
+						<Text
+							style={{
+								fontSize: 16,
+								textAlign: "center",
+								marginTop: 4,
+								color: "#6F6F6F",
+							}}
+							numberOfLines={1}
+						>
+							{data?.currenttrack_artist || " "}
+						</Text>
 					</View>
-					<Text
-						style={{
-							fontSize: 18,
-							textAlign: "center",
-							marginTop: height * 0.001,
-							maxWidth: width * 0.85,
-							color: "#6F6F6F",
-						}}
-					>
-						{data?.currenttrack_artist || " "}
-					</Text>
 					<Pressable
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}

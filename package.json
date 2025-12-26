@@ -62,15 +62,11 @@
 	"expo": {
 		"doctor": {
 			"reactNativeDirectoryCheck": {
-				"exclude": [
-					"react-native-track-player"
-				]
+				"exclude": ["react-native-track-player"]
 			}
 		},
 		"install": {
-			"exclude": [
-				"@react-navigation/native"
-			]
+			"exclude": ["@react-navigation/native"]
 		}
 	},
 	"private": true
