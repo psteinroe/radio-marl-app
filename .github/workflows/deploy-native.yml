@@ -27,4 +27,4 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🚀 Deploy
-        run: bun run deploy:native
+        run: pnpm run deploy:native

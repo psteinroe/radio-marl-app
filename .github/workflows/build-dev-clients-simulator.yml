@@ -26,5 +26,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 🚀 Deploy
-        run: bun run build:dev-clients-simulator
+      - name: 🏗 Build
+        run: pnpm run build:dev-clients-simulator

@@ -5,9 +5,13 @@ inputs:
   github-token:
     description: The GitHub token
 
-  bun-version:
-    description: Version of Bun to use
-    default: latest
+  pnpm-version:
+    description: Version of pnpm to use
+    default: "10"
+
+  node-version:
+    description: Version of Node.js to use
+    default: "20"
 
   eas-version:
     description: Version of EAS CLI to use
@@ -24,10 +28,16 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: 🏗 Setup Bun
-      uses: oven-sh/setup-bun@v1
+    - name: 🏗 Setup pnpm
+      uses: pnpm/action-setup@v4
       with:
-        bun-version: ${{ inputs.bun-version }}
+        version: ${{ inputs.pnpm-version }}
+
+    - name: 🏗 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
 
     - name: 🏗 Setup Expo
       if: ${{ inputs.expo-token }}
@@ -36,8 +46,8 @@ runs:
         eas-version: ${{ inputs.eas-version }}
         expo-version: ${{ inputs.expo-version }}
         token: ${{ inputs.expo-token }}
-        packager: bun
+        packager: pnpm
 
     - name: 📦 Install dependencies
-      run: bun install
+      run: pnpm install
       shell: bash

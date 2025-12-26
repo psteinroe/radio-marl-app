@@ -8,7 +8,7 @@
 		"build:dev-clients": "eas build --profile dev-client --platform all --non-interactive --no-wait",
 		"build:dev-clients-simulator": "eas build --profile dev-client-simulator --platform all --non-interactive --no-wait",
 		"start": "NODE_ENV=development expo start --dev-client",
-		"start:ios": "NODE_ENV=development expo start --ios --dev-client",
+		"start:ios": "NODE_ENV=development expo start --ios --dev-client --clear",
 		"start:android": "NODE_ENV=development expo start --android --dev-client",
 		"deploy:native": "eas build --auto-submit --profile=main --message=$SHA --platform=all --non-interactive --no-wait",
 		"deploy": "eas update --auto --non-interactive",
@@ -33,7 +33,6 @@
 		"expo-updates": "~0.28.17",
 		"expo-web-browser": "~14.2.0",
 		"lucide-react-native": "^0.562.0",
-		"nativewind": "4.0.22",
 		"react": "19.0.0",
 		"react-dom": "19.0.0",
 		"react-native": "0.79.6",
@@ -43,8 +42,7 @@
 		"react-native-screens": "4.11.1",
 		"react-native-svg": "15.11.2",
 		"react-native-track-player": "^4.0.1",
-		"react-native-web": "~0.20.0",
-		"tailwindcss": "^3.4.1"
+		"react-native-web": "~0.20.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.0",

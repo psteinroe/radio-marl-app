@@ -22,7 +22,14 @@ export default function Tracklist() {
 
 	if (isLoading) {
 		return (
-			<View className={"h-full items-center justify-center gap-y-4"}>
+			<View
+				style={{
+					height: "100%",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: 16,
+				}}
+			>
 				<ActivityIndicator size="large" />
 			</View>
 		);
@@ -54,32 +61,40 @@ export default function Tracklist() {
 			/>
 			<SafeAreaView edges={["left", "right", "bottom"]}>
 				<FlatList
-					className="mt-2"
+					style={{ marginTop: 8 }}
 					data={data}
 					renderItem={({ item, index }) => {
 						return (
-							<View className="mb-6 flex-row items-center justify-center px-10">
+							<View
+								style={{
+									marginBottom: 24,
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "center",
+									paddingHorizontal: 40,
+								}}
+							>
 								{index === 0 && (
 									<Playing
-										className="mr-1"
+										style={{ marginRight: 4 }}
 										fill="#7731EC"
 										width={16}
 										height={16}
 									/>
 								)}
-								<View className="flex-1 self-center">
+								<View style={{ flex: 1, alignSelf: "center" }}>
 									<Text
-										className="text-sm"
 										style={{
+											fontSize: 14,
 											color: "#112022",
 										}}
 									>
 										{item.started.toLocaleString()}
 									</Text>
-									<View className="flex flex-row items-center">
+									<View style={{ flexDirection: "row", alignItems: "center" }}>
 										<Text
-											className="text-2xl"
 											style={{
+												fontSize: 24,
 												color: index === 0 ? "#7731EC" : "#112022",
 											}}
 										>
@@ -87,8 +102,8 @@ export default function Tracklist() {
 										</Text>
 									</View>
 									<Text
-										className="text-base"
 										style={{
+											fontSize: 16,
 											color: "#6F6F6F",
 										}}
 									>

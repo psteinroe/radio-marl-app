@@ -76,23 +76,33 @@ export default function SongWish() {
 					),
 				}}
 			/>
-			<SafeAreaView edges={["left", "right", "bottom"]} className="flex-1">
+			<SafeAreaView edges={["left", "right", "bottom"]} style={{ flex: 1 }}>
 				{/* Search Input */}
-				<View className="px-6 mb-4">
+				<View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
 					<View
-						className="flex-row items-center rounded-lg px-3"
-						style={{ backgroundColor: "#EEF2F2" }}
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							borderRadius: 8,
+							paddingHorizontal: 12,
+							backgroundColor: "#EEF2F2",
+						}}
 					>
 						<Search width={20} height={20} color="#6F6F6F" />
 						<TextInput
-							className="flex-1 py-3 px-2 text-base"
 							placeholder="Song suchen..."
 							placeholderTextColor="#6F6F6F"
 							value={searchQuery}
 							onChangeText={setSearchQuery}
 							autoCapitalize="none"
 							autoCorrect={false}
-							style={{ color: "#112022" }}
+							style={{
+								flex: 1,
+								paddingVertical: 12,
+								paddingHorizontal: 8,
+								fontSize: 16,
+								color: "#112022",
+							}}
 						/>
 						{isSearching && (
 							<Pressable onPress={clearSearch}>
@@ -103,25 +113,33 @@ export default function SongWish() {
 				</View>
 
 				{/* Section Header */}
-				<View className="px-6 mb-2">
-					<Text className="text-sm font-medium" style={{ color: "#6F6F6F" }}>
+				<View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
+					<Text style={{ fontSize: 14, fontWeight: "500", color: "#6F6F6F" }}>
 						{isSearching ? "Suchergebnisse" : "Letzte Wünsche"}
 					</Text>
 				</View>
 
 				{/* Loading State */}
 				{isLoading ? (
-					<View className="flex-1 items-center justify-center">
+					<View
+						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+					>
 						<ActivityIndicator size="large" color="#7731EC" />
 					</View>
 				) : isSearching ? (
 					/* Search Results */
 					<FlatList
-						className="px-6"
+						style={{ paddingHorizontal: 24 }}
 						data={searchResults || []}
 						keyExtractor={(item) => item.id.toString()}
 						ListEmptyComponent={
-							<Text className="text-center py-8" style={{ color: "#6F6F6F" }}>
+							<Text
+								style={{
+									textAlign: "center",
+									paddingVertical: 32,
+									color: "#6F6F6F",
+								}}
+							>
 								Keine Ergebnisse gefunden
 							</Text>
 						}
@@ -130,10 +148,23 @@ export default function SongWish() {
 							const isLoadingThis = loadingSongId === item.id;
 
 							return (
-								<View className="flex-row items-center justify-between py-3 border-b border-gray-100">
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										justifyContent: "space-between",
+										paddingVertical: 12,
+										borderBottomWidth: 1,
+										borderBottomColor: "#f3f4f6",
+									}}
+								>
 									<Text
-										className="flex-1 text-base mr-3"
-										style={{ color: "#112022" }}
+										style={{
+											flex: 1,
+											fontSize: 16,
+											marginRight: 12,
+											color: "#112022",
+										}}
 										numberOfLines={2}
 									>
 										{item.title}
@@ -141,8 +172,13 @@ export default function SongWish() {
 									<Pressable
 										onPress={() => handleRequest(item.id)}
 										disabled={isRequested || isLoadingThis}
-										className="p-2 items-center justify-center"
-										style={{ width: 40, height: 40 }}
+										style={{
+											padding: 8,
+											alignItems: "center",
+											justifyContent: "center",
+											width: 40,
+											height: 40,
+										}}
 									>
 										{isLoadingThis ? (
 											<ActivityIndicator size="small" color="#7731EC" />
@@ -162,19 +198,31 @@ export default function SongWish() {
 				) : (
 					/* Recent Requests */
 					<FlatList
-						className="px-6"
+						style={{ paddingHorizontal: 24 }}
 						data={recentRequests || []}
 						keyExtractor={(item, index) => `${item.title}-${index}`}
 						ListEmptyComponent={
-							<Text className="text-center py-8" style={{ color: "#6F6F6F" }}>
+							<Text
+								style={{
+									textAlign: "center",
+									paddingVertical: 32,
+									color: "#6F6F6F",
+								}}
+							>
 								Noch keine Wünsche
 							</Text>
 						}
 						renderItem={({ item, index }) => (
-							<View className="py-3 border-b border-gray-100">
+							<View
+								style={{
+									paddingVertical: 12,
+									borderBottomWidth: 1,
+									borderBottomColor: "#f3f4f6",
+								}}
+							>
 								<Text
-									className="text-lg"
 									style={{
+										fontSize: 18,
 										color: index === 0 ? "#7731EC" : "#112022",
 									}}
 								>

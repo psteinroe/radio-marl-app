@@ -84,11 +84,21 @@ export default function Home() {
 				}}
 			/>
 			<SafeAreaView
-				className="flex flex-col h-full justify-between"
 				edges={["left", "right"]}
-				style={{ backgroundColor: "#EEF2F2" }}
+				style={{
+					flex: 1,
+					flexDirection: "column",
+					justifyContent: "space-between",
+					backgroundColor: "#EEF2F2",
+				}}
 			>
-				<View className="flex flex-col items-center pt-10">
+				<View
+					style={{
+						flexDirection: "column",
+						alignItems: "center",
+						paddingTop: 40,
+					}}
+				>
 					<Image
 						cachePolicy="none"
 						source={{
@@ -103,16 +113,21 @@ export default function Home() {
 						}}
 					/>
 					<View
-						className="flex flex-row justify-center items-center"
 						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
 							height: 36 * 2,
 							marginTop: height * 0.02,
 							maxWidth: width * 0.85,
 						}}
 					>
 						<Text
-							className="text-3xl font-semibold text-center w-full"
 							style={{
+								fontSize: 30,
+								fontWeight: "600",
+								textAlign: "center",
+								width: "100%",
 								color: "#112022",
 							}}
 							numberOfLines={1}
@@ -121,8 +136,9 @@ export default function Home() {
 						</Text>
 					</View>
 					<Text
-						className="text-lg text-center"
 						style={{
+							fontSize: 18,
+							textAlign: "center",
 							marginTop: height * 0.001,
 							maxWidth: width * 0.85,
 							color: "#6F6F6F",
@@ -134,8 +150,13 @@ export default function Home() {
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
 						onPressOut={() => setActiveButton(false)}
-						className="rounded-full h-[80px] w-[80px] flex flex-row justify-center items-center text-center"
 						style={{
+							borderRadius: 9999,
+							height: 80,
+							width: 80,
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
 							backgroundColor:
 								activeButton === "playpause" ? "#7731EC" : "#112022",
 							marginTop: height * 0.025,
@@ -144,15 +165,30 @@ export default function Home() {
 						{playerState.state === "buffering" ? (
 							<ActivityIndicator size="large" />
 						) : playing ? (
-							<Pause fill="white" className="text-white" size={38} />
+							<Pause fill="white" color="white" size={38} />
 						) : (
-							<Play fill="white" className="text-white ml-1" size={38} />
+							<Play
+								fill="white"
+								color="white"
+								size={38}
+								style={{ marginLeft: 4 }}
+							/>
 						)}
 					</Pressable>
 				</View>
 				<CustomFooter>
-					<View className="flex flex-row justify-between items-center w-full px-6">
-						<View className="flex flex-row items-center" style={{ gap: 24 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							width: "100%",
+							paddingHorizontal: 24,
+						}}
+					>
+						<View
+							style={{ flexDirection: "row", alignItems: "center", gap: 24 }}
+						>
 							<Pressable
 								onPress={() =>
 									Linking.openURL(
@@ -210,16 +246,22 @@ export default function Home() {
 								/>
 							</Pressable>
 						</View>
-						<View className="flex flex-row items-center" style={{ gap: 8 }}>
+						<View
+							style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+						>
 							<Pressable
 								onPress={() => push("./songwish")}
 								onPressIn={() => setActiveButton("songwish")}
 								onPressOut={() => setActiveButton(false)}
-								className="flex flex-col items-center justify-center rounded-full py-3"
 								style={{
+									flexDirection: "column",
+									alignItems: "center",
+									justifyContent: "center",
+									borderRadius: 9999,
+									paddingVertical: 12,
 									backgroundColor:
 										activeButton === "songwish" ? "#7731EC" : "#F5F5F5",
-									width: 80,
+									width: 86,
 								}}
 							>
 								<Star
@@ -228,8 +270,8 @@ export default function Home() {
 									color={activeButton === "songwish" ? "white" : "#2E4454"}
 								/>
 								<Text
-									className="text-xs"
 									style={{
+										fontSize: 12,
 										color: activeButton === "songwish" ? "white" : "#2E4454",
 									}}
 								>
@@ -240,11 +282,15 @@ export default function Home() {
 								onPress={() => push("./tracklist")}
 								onPressIn={() => setActiveButton("tracklist")}
 								onPressOut={() => setActiveButton(false)}
-								className="flex flex-col items-center justify-center rounded-full py-3"
 								style={{
+									flexDirection: "column",
+									alignItems: "center",
+									justifyContent: "center",
+									borderRadius: 9999,
+									paddingVertical: 12,
 									backgroundColor:
 										activeButton === "tracklist" ? "#7731EC" : "#F5F5F5",
-									width: 80,
+									width: 86,
 								}}
 							>
 								<ListMusic
@@ -253,8 +299,8 @@ export default function Home() {
 									color={activeButton === "tracklist" ? "white" : "#2E4454"}
 								/>
 								<Text
-									className="text-xs"
 									style={{
+										fontSize: 12,
 										color: activeButton === "tracklist" ? "white" : "#2E4454",
 									}}
 								>

@@ -1,20 +1,9 @@
-import { getDefaultHeaderHeight } from "@react-navigation/elements";
 import type * as React from "react";
-import { Platform, View } from "react-native";
-import {
-	useSafeAreaFrame,
-	useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function CustomFooter({ children }: React.PropsWithChildren) {
 	const insets = useSafeAreaInsets();
-	const frame = useSafeAreaFrame();
-
-	// On models with Dynamic Island the status bar height is smaller than the safe area top inset.
-	const hasDynamicIsland = Platform.OS === "ios" && insets.top > 50;
-	const statusBarHeight = hasDynamicIsland ? insets.top - 5 : insets.top;
-
-	const defaultHeight = getDefaultHeaderHeight(frame, false, statusBarHeight);
 
 	return (
 		<View
@@ -31,9 +20,16 @@ export function CustomFooter({ children }: React.PropsWithChildren) {
 			>
 				<View
 					pointerEvents="box-none"
-					className="flex flex-row items-center justify-center bg-white rounded-t-3xl w-full"
 					style={{
-						height: defaultHeight * 1.2,
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						backgroundColor: "white",
+						borderTopLeftRadius: 24,
+						borderTopRightRadius: 24,
+						width: "100%",
+						height: 72,
+						paddingTop: 8,
 					}}
 				>
 					{children}
