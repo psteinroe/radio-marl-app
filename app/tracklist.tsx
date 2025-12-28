@@ -67,49 +67,55 @@ export default function Tracklist() {
 						return (
 							<View
 								style={{
-									marginBottom: 24,
-									flexDirection: "row",
-									alignItems: "center",
-									justifyContent: "center",
-									paddingHorizontal: 40,
+									marginBottom: 20,
+									paddingHorizontal: 24,
 								}}
 							>
-								{index === 0 && (
-									<Playing
-										style={{ marginRight: 4 }}
-										fill="#7731EC"
-										width={16}
-										height={16}
-									/>
-								)}
-								<View style={{ flex: 1, alignSelf: "center" }}>
+								<Text
+									style={{
+										fontSize: 12,
+										color: "#6F6F6F",
+										marginBottom: 2,
+									}}
+								>
+									{item.started.toLocaleString()}
+								</Text>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+									}}
+								>
+									{index === 0 && (
+										<Playing
+											style={{ marginRight: 6 }}
+											fill="#7731EC"
+											width={14}
+											height={14}
+										/>
+									)}
 									<Text
 										style={{
-											fontSize: 14,
-											color: "#112022",
+											fontSize: 20,
+											fontWeight: "600",
+											color: index === 0 ? "#7731EC" : "#112022",
+											flex: 1,
 										}}
+										numberOfLines={1}
 									>
-										{item.started.toLocaleString()}
-									</Text>
-									<View style={{ flexDirection: "row", alignItems: "center" }}>
-										<Text
-											style={{
-												fontSize: 24,
-												color: index === 0 ? "#7731EC" : "#112022",
-											}}
-										>
-											{item.tracktitle}
-										</Text>
-									</View>
-									<Text
-										style={{
-											fontSize: 16,
-											color: "#6F6F6F",
-										}}
-									>
-										{item.trackartist}
+										{item.tracktitle}
 									</Text>
 								</View>
+								<Text
+									style={{
+										fontSize: 14,
+										color: "#6F6F6F",
+										marginTop: 2,
+									}}
+									numberOfLines={1}
+								>
+									{item.trackartist}
+								</Text>
 							</View>
 						);
 					}}

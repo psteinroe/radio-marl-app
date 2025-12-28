@@ -28,6 +28,13 @@ const { width, height } = Dimensions.get("window");
 
 const HEADER_LOGO_RATIO = 802 / 87;
 
+// Responsive sizing based on screen height
+const isSmallScreen = height < 700;
+const COVER_SIZE = Math.min(width * 0.7, height * 0.35);
+const PLAY_BUTTON_SIZE = isSmallScreen ? 64 : 80;
+const PLAY_ICON_SIZE = isSmallScreen ? 30 : 38;
+const SPACING = isSmallScreen ? 12 : 20;
+
 export default function Home() {
 	const { playing } = useIsPlaying();
 	const { push } = useRouter();
@@ -96,7 +103,7 @@ export default function Home() {
 					style={{
 						flexDirection: "column",
 						alignItems: "center",
-						paddingTop: 40,
+						paddingTop: SPACING,
 					}}
 				>
 					<Image
@@ -108,26 +115,26 @@ export default function Home() {
 						}}
 						alt="cover art"
 						style={{
-							width: height * 0.38,
-							height: height * 0.38,
+							width: COVER_SIZE,
+							height: COVER_SIZE,
 						}}
 					/>
 					<View
 						style={{
-							marginTop: height * 0.025,
+							marginTop: SPACING,
 							paddingHorizontal: 24,
 							alignItems: "center",
-							height: 90,
+							height: isSmallScreen ? 70 : 90,
 							justifyContent: "center",
 						}}
 					>
 						<Text
 							style={{
-								fontSize: 24,
+								fontSize: isSmallScreen ? 20 : 24,
 								fontWeight: "700",
 								textAlign: "center",
 								color: "#112022",
-								lineHeight: 32,
+								lineHeight: isSmallScreen ? 26 : 32,
 							}}
 							numberOfLines={2}
 							adjustsFontSizeToFit
@@ -137,7 +144,7 @@ export default function Home() {
 						</Text>
 						<Text
 							style={{
-								fontSize: 16,
+								fontSize: isSmallScreen ? 14 : 16,
 								textAlign: "center",
 								marginTop: 4,
 								color: "#6F6F6F",
@@ -153,25 +160,25 @@ export default function Home() {
 						onPressOut={() => setActiveButton(false)}
 						style={{
 							borderRadius: 9999,
-							height: 80,
-							width: 80,
+							height: PLAY_BUTTON_SIZE,
+							width: PLAY_BUTTON_SIZE,
 							flexDirection: "row",
 							justifyContent: "center",
 							alignItems: "center",
 							backgroundColor:
 								activeButton === "playpause" ? "#7731EC" : "#112022",
-							marginTop: height * 0.025,
+							marginTop: SPACING,
 						}}
 					>
 						{playerState.state === "buffering" ? (
-							<ActivityIndicator size="large" />
+							<ActivityIndicator size={isSmallScreen ? "small" : "large"} />
 						) : playing ? (
-							<Pause fill="white" color="white" size={38} />
+							<Pause fill="white" color="white" size={PLAY_ICON_SIZE} />
 						) : (
 							<Play
 								fill="white"
 								color="white"
-								size={38}
+								size={PLAY_ICON_SIZE}
 								style={{ marginLeft: 4 }}
 							/>
 						)}
@@ -259,10 +266,11 @@ export default function Home() {
 									alignItems: "center",
 									justifyContent: "center",
 									borderRadius: 9999,
-									paddingVertical: 12,
+									padding: isSmallScreen ? 12 : undefined,
+									paddingVertical: isSmallScreen ? undefined : 12,
 									backgroundColor:
 										activeButton === "songwish" ? "#7731EC" : "#F5F5F5",
-									width: 86,
+									width: isSmallScreen ? undefined : 86,
 								}}
 							>
 								<Star
@@ -270,14 +278,16 @@ export default function Home() {
 									height={24}
 									color={activeButton === "songwish" ? "white" : "#2E4454"}
 								/>
-								<Text
-									style={{
-										fontSize: 12,
-										color: activeButton === "songwish" ? "white" : "#2E4454",
-									}}
-								>
-									Wunsch
-								</Text>
+								{!isSmallScreen && (
+									<Text
+										style={{
+											fontSize: 12,
+											color: activeButton === "songwish" ? "white" : "#2E4454",
+										}}
+									>
+										Wunsch
+									</Text>
+								)}
 							</Pressable>
 							<Pressable
 								onPress={() => push("./tracklist")}
@@ -288,10 +298,11 @@ export default function Home() {
 									alignItems: "center",
 									justifyContent: "center",
 									borderRadius: 9999,
-									paddingVertical: 12,
+									padding: isSmallScreen ? 12 : undefined,
+									paddingVertical: isSmallScreen ? undefined : 12,
 									backgroundColor:
 										activeButton === "tracklist" ? "#7731EC" : "#F5F5F5",
-									width: 86,
+									width: isSmallScreen ? undefined : 86,
 								}}
 							>
 								<ListMusic
@@ -299,14 +310,16 @@ export default function Home() {
 									height={24}
 									color={activeButton === "tracklist" ? "white" : "#2E4454"}
 								/>
-								<Text
-									style={{
-										fontSize: 12,
-										color: activeButton === "tracklist" ? "white" : "#2E4454",
-									}}
-								>
-									Wiedergabe
-								</Text>
+								{!isSmallScreen && (
+									<Text
+										style={{
+											fontSize: 12,
+											color: activeButton === "tracklist" ? "white" : "#2E4454",
+										}}
+									>
+										Wiedergabe
+									</Text>
+								)}
 							</Pressable>
 						</View>
 					</View>
