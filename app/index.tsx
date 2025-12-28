@@ -30,10 +30,11 @@ const HEADER_LOGO_RATIO = 802 / 87;
 
 // Responsive sizing based on screen height
 const isSmallScreen = height < 700;
-const COVER_SIZE = Math.min(width * 0.7, height * 0.35);
-const PLAY_BUTTON_SIZE = isSmallScreen ? 64 : 80;
-const PLAY_ICON_SIZE = isSmallScreen ? 30 : 38;
-const SPACING = isSmallScreen ? 12 : 20;
+const COVER_SIZE = Math.min(width * 0.75, height * 0.4);
+const PLAY_BUTTON_SIZE = isSmallScreen ? 60 : 72;
+const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
+const SPACING = isSmallScreen ? 10 : 16;
+const ICON_SIZE = isSmallScreen ? 24 : 28;
 
 export default function Home() {
 	const { playing } = useIsPlaying();
@@ -101,30 +102,42 @@ export default function Home() {
 			>
 				<View
 					style={{
+						flex: 1,
 						flexDirection: "column",
 						alignItems: "center",
-						paddingTop: SPACING,
+						justifyContent: "space-evenly",
+						paddingVertical: SPACING,
 					}}
 				>
-					<Image
-						cachePolicy="none"
-						source={{
-							uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${
-								data?.currenttrack_title || "fallback"
-							}`,
-						}}
-						alt="cover art"
-						style={{
-							width: COVER_SIZE,
-							height: COVER_SIZE,
-						}}
-					/>
 					<View
 						style={{
-							marginTop: SPACING,
+							shadowColor: "#000",
+							shadowOffset: { width: 0, height: 4 },
+							shadowOpacity: 0.15,
+							shadowRadius: 12,
+							elevation: 8,
+							borderRadius: 16,
+						}}
+					>
+						<Image
+							cachePolicy="none"
+							source={{
+								uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${
+									data?.currenttrack_title || "fallback"
+								}`,
+							}}
+							alt="cover art"
+							style={{
+								width: COVER_SIZE,
+								height: COVER_SIZE,
+								borderRadius: 16,
+							}}
+						/>
+					</View>
+					<View
+						style={{
 							paddingHorizontal: 24,
 							alignItems: "center",
-							height: isSmallScreen ? 70 : 90,
 							justifyContent: "center",
 						}}
 					>
@@ -167,7 +180,6 @@ export default function Home() {
 							alignItems: "center",
 							backgroundColor:
 								activeButton === "playpause" ? "#7731EC" : "#112022",
-							marginTop: SPACING,
 						}}
 					>
 						{playerState.state === "buffering" ? (
@@ -195,7 +207,11 @@ export default function Home() {
 						}}
 					>
 						<View
-							style={{ flexDirection: "row", alignItems: "center", gap: 24 }}
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: isSmallScreen ? 16 : 20,
+							}}
 						>
 							<Pressable
 								onPress={() =>
@@ -208,8 +224,8 @@ export default function Home() {
 							>
 								<WhatsApp
 									viewBox="0 0 24 24"
-									width={30}
-									height={30}
+									width={ICON_SIZE}
+									height={ICON_SIZE}
 									strokeWidth={0.5}
 									fill={activeButton === "whatsapp" ? "#7731EC" : "#2E4454"}
 								/>
@@ -223,8 +239,8 @@ export default function Home() {
 							>
 								<Facebook
 									viewBox="0 0 24 24"
-									width={30}
-									height={30}
+									width={ICON_SIZE}
+									height={ICON_SIZE}
 									strokeWidth={0.5}
 									fill={activeButton === "facebook" ? "#7731EC" : "#2E4454"}
 								/>
@@ -237,8 +253,8 @@ export default function Home() {
 								onPressOut={() => setActiveButton(false)}
 							>
 								<Mail
-									width={30}
-									height={30}
+									width={ICON_SIZE}
+									height={ICON_SIZE}
 									color={activeButton === "mail" ? "#7731EC" : "#2E4454"}
 								/>
 							</Pressable>
@@ -248,8 +264,8 @@ export default function Home() {
 								onPressOut={() => setActiveButton(false)}
 							>
 								<Globe
-									width={30}
-									height={30}
+									width={ICON_SIZE}
+									height={ICON_SIZE}
 									color={activeButton === "globe" ? "#7731EC" : "#2E4454"}
 								/>
 							</Pressable>
@@ -261,27 +277,30 @@ export default function Home() {
 								onPress={() => push("./songwish")}
 								onPressIn={() => setActiveButton("songwish")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Songwunsch"
+								accessibilityRole="button"
 								style={{
 									flexDirection: "column",
 									alignItems: "center",
 									justifyContent: "center",
 									borderRadius: 9999,
-									padding: isSmallScreen ? 12 : undefined,
-									paddingVertical: isSmallScreen ? undefined : 12,
+									padding: isSmallScreen ? 10 : undefined,
+									paddingVertical: isSmallScreen ? undefined : 10,
 									backgroundColor:
 										activeButton === "songwish" ? "#7731EC" : "#F5F5F5",
-									width: isSmallScreen ? undefined : 86,
+									width: isSmallScreen ? undefined : 80,
 								}}
 							>
 								<Star
-									width={24}
-									height={24}
+									width={isSmallScreen ? 20 : 22}
+									height={isSmallScreen ? 20 : 22}
 									color={activeButton === "songwish" ? "white" : "#2E4454"}
 								/>
 								{!isSmallScreen && (
 									<Text
 										style={{
-											fontSize: 12,
+											fontSize: 11,
+											marginTop: 2,
 											color: activeButton === "songwish" ? "white" : "#2E4454",
 										}}
 									>
@@ -293,27 +312,30 @@ export default function Home() {
 								onPress={() => push("./tracklist")}
 								onPressIn={() => setActiveButton("tracklist")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Wiedergabeliste"
+								accessibilityRole="button"
 								style={{
 									flexDirection: "column",
 									alignItems: "center",
 									justifyContent: "center",
 									borderRadius: 9999,
-									padding: isSmallScreen ? 12 : undefined,
-									paddingVertical: isSmallScreen ? undefined : 12,
+									padding: isSmallScreen ? 10 : undefined,
+									paddingVertical: isSmallScreen ? undefined : 10,
 									backgroundColor:
 										activeButton === "tracklist" ? "#7731EC" : "#F5F5F5",
-									width: isSmallScreen ? undefined : 86,
+									width: isSmallScreen ? undefined : 80,
 								}}
 							>
 								<ListMusic
-									width={24}
-									height={24}
+									width={isSmallScreen ? 20 : 22}
+									height={isSmallScreen ? 20 : 22}
 									color={activeButton === "tracklist" ? "white" : "#2E4454"}
 								/>
 								{!isSmallScreen && (
 									<Text
 										style={{
-											fontSize: 12,
+											fontSize: 11,
+											marginTop: 2,
 											color: activeButton === "tracklist" ? "white" : "#2E4454",
 										}}
 									>
