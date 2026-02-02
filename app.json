@@ -32,11 +32,6 @@
 			},
 			"package": "com.radio_marl.app"
 		},
-		"web": {
-			"bundler": "metro",
-			"output": "static",
-			"favicon": "./assets/images/favicon.ico"
-		},
 		"plugins": ["expo-router", "expo-font"],
 		"experiments": {
 			"typedRoutes": true
