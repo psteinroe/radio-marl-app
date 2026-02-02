@@ -11,7 +11,7 @@
 		"start:ios": "NODE_ENV=development expo start --ios --dev-client --clear",
 		"start:android": "NODE_ENV=development expo start --android --dev-client",
 		"deploy:native": "eas build --auto-submit --profile=main --message=$SHA --platform=all --non-interactive --no-wait",
-		"deploy": "eas update --auto --non-interactive",
+		"deploy": "eas update --auto --platform ios --platform android",
 		"typecheck": "tsc --pretty --noEmit",
 		"check": "biome check",
 		"fix": "biome check --write"
