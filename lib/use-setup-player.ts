@@ -44,6 +44,11 @@ export function useSetupPlayer() {
 		(async () => {
 			await setupPlayer({
 				autoHandleInterruptions: true,
+				// Minimal buffer for live streaming to reduce stale audio on resume
+				minBuffer: 2,
+				maxBuffer: 5,
+				playBuffer: 1,
+				backBuffer: 0,
 			});
 
 			await TrackPlayer.updateOptions({
