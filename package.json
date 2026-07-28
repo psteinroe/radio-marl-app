@@ -19,9 +19,9 @@
 		"typecheck": "tsc --pretty --noEmit",
 		"check": "biome check .",
 		"fix": "biome check --write .",
-		"test": "tsx --test tests/**/*.test.mjs",
+		"test": "tsx --test tests/*.test.mjs",
 		"doctor": "npx --yes expo-doctor@latest",
-		"validate": "tsc --pretty --noEmit && biome check . && tsx --test tests/**/*.test.mjs"
+		"validate": "tsc --pretty --noEmit && biome check . && tsx --test tests/*.test.mjs"
 	},
 	"dependencies": {
 		"@react-navigation/native": "^7.1.33",
