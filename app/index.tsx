@@ -1,8 +1,9 @@
+import { PlaybackState, useIsPlaying, usePlaybackState } from "@rntp/player";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
 import { Globe, ListMusic, Mail, Pause, Play, Star } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
 	Dimensions,
@@ -11,18 +12,13 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TrackPlayer, {
-	useIsPlaying,
-	usePlaybackState,
-} from "react-native-track-player";
 import { Facebook } from "../components/icons/facebook";
 import { RadioMarlHeader } from "../components/icons/radio-marl-header";
 import { WhatsApp } from "../components/icons/whatsapp";
 import { CustomFooter } from "../components/ui/custom-footer";
 import { CustomHeader } from "../components/ui/custom-header";
+import { radioPlayer } from "../lib/radio-player";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
-import { useRecentTrackList } from "../lib/use-recent-tracklist";
-import { TRACK, useResetOnError } from "../lib/use-setup-player";
 
 const { width, height } = Dimensions.get("window");
 
@@ -37,22 +33,22 @@ const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 
 export default function Home() {
-	const { playing } = useIsPlaying();
-	const { push } = useRouter();
-
+	const playing = useIsPlaying();
 	const playerState = usePlaybackState();
-
-	useRecentTrackList();
-
-	useResetOnError();
-
+	const playbackRequested = useRef(playing);
+	const { push } = useRouter();
 	const { data } = useNowPlayingInfo();
+	const encodedTrackTitle = encodeURIComponent(
+		data?.currenttrack_title || "fallback",
+	);
 
 	useEffect(() => {
-		if (playerState.state === "error") {
-			TrackPlayer.reset();
+		if (playing) {
+			playbackRequested.current = true;
+		} else if (playerState !== PlaybackState.Buffering) {
+			playbackRequested.current = false;
 		}
-	}, [playerState.state]);
+	}, [playerState, playing]);
 
 	const [activeButton, setActiveButton] = useState<
 		| "whatsapp"
@@ -65,15 +61,15 @@ export default function Home() {
 		| boolean
 	>(false);
 
-	const handlePlayPress = async () => {
-		if (playing) {
-			await TrackPlayer.stop();
-		} else {
-			// Reset and re-add track to force fresh connection to live stream
-			await TrackPlayer.reset();
-			await TrackPlayer.add(TRACK);
-			await TrackPlayer.play();
-		}
+	const handlePlayPress = () => {
+		const shouldStop = playbackRequested.current;
+		playbackRequested.current = !shouldStop;
+		const command = shouldStop ? radioPlayer.stop() : radioPlayer.startFresh();
+
+		void command.catch((error) => {
+			playbackRequested.current = false;
+			console.error("Audio playback command failed", error);
+		});
 	};
 
 	return (
@@ -120,11 +116,9 @@ export default function Home() {
 						}}
 					>
 						<Image
-							cachePolicy="none"
+							cachePolicy="memory-disk"
 							source={{
-								uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${
-									data?.currenttrack_title || "fallback"
-								}`,
+								uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${encodedTrackTitle}`,
 							}}
 							alt="cover art"
 							style={{
@@ -170,6 +164,14 @@ export default function Home() {
 					<Pressable
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
+						accessibilityLabel={
+							playing ? "Wiedergabe stoppen" : "Radio abspielen"
+						}
+						accessibilityRole="button"
+						accessibilityState={{
+							busy: playerState === PlaybackState.Buffering,
+							selected: playing,
+						}}
 						onPressOut={() => setActiveButton(false)}
 						style={{
 							borderRadius: 9999,
@@ -182,8 +184,11 @@ export default function Home() {
 								activeButton === "playpause" ? "#7731EC" : "#112022",
 						}}
 					>
-						{playerState.state === "buffering" ? (
-							<ActivityIndicator size={isSmallScreen ? "small" : "large"} />
+						{playerState === PlaybackState.Buffering ? (
+							<ActivityIndicator
+								color="white"
+								size={isSmallScreen ? "small" : "large"}
+							/>
 						) : playing ? (
 							<Pause fill="white" color="white" size={PLAY_ICON_SIZE} />
 						) : (

@@ -5,17 +5,20 @@ export type NowPlayingInfo = {
 	autodj: boolean;
 	live: boolean;
 	nowplaying: string;
-	listeners: number;
+	listeners: number | string;
 	nexttrack: string;
 	nexttrack_artist: string;
 	nexttrack_title: string;
+	currenttrack: string;
 	currenttrack_artist: string;
 	currenttrack_title: string;
 };
 
 export const nowPlayingInfoOpts = {
 	queryKey: ["nowplayinginfo"],
-	refetchInterval: 1000,
+	refetchInterval: 10_000,
+	refetchIntervalInBackground: false,
+	staleTime: 5_000,
 	queryFn: async () => {
 		const res = await fetch("https://c32.radioboss.fm/w/nowplayinginfo?u=152");
 		if (!res.ok) throw new Error("Network response was not ok");

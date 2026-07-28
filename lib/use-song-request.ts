@@ -79,6 +79,7 @@ export const useRecentRequests = () => {
 			const results: RecentRequest[] = await res.json();
 			return results;
 		},
-		refetchInterval: 5000, // Auto-refresh every 5 seconds
+		refetchInterval: 15_000,
+		refetchIntervalInBackground: false,
 	});
 };

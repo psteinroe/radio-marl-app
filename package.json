@@ -1,7 +1,11 @@
 {
 	"name": "radio-marl-app",
-	"main": "expo-router/entry",
-	"version": "1.0.5",
+	"main": "index.js",
+	"version": "1.1.0",
+	"packageManager": "pnpm@10.12.1",
+	"engines": {
+		"node": ">=20.19"
+	},
 	"scripts": {
 		"install:dev-client-ios-simulator": "NODE_ENV=development eas build:run -p ios --latest",
 		"install:dev-client-android-simulator": "NODE_ENV=development eas build:run -p android --latest",
@@ -11,63 +15,47 @@
 		"start:ios": "NODE_ENV=development expo start --ios --dev-client --clear",
 		"start:android": "NODE_ENV=development expo start --android --dev-client",
 		"deploy:native": "eas build --auto-submit --profile=main --message=$SHA --platform=all --non-interactive --no-wait",
-		"deploy": "eas update --auto --platform ios --platform android",
+		"deploy": "eas update --auto --platform all --non-interactive",
 		"typecheck": "tsc --pretty --noEmit",
-		"check": "biome check",
-		"fix": "biome check --write"
+		"check": "biome check .",
+		"fix": "biome check --write .",
+		"test": "tsx --test tests/**/*.test.mjs",
+		"doctor": "npx --yes expo-doctor@latest",
+		"validate": "tsc --pretty --noEmit && biome check . && tsx --test tests/**/*.test.mjs"
 	},
 	"dependencies": {
-		"@expo/vector-icons": "^14.1.0",
-		"@react-navigation/native": "^7.1.26",
-		"@tanstack/react-query": "5.90.12",
-		"expo": "^53.0.25",
-		"expo-constants": "~17.1.8",
-		"expo-dev-client": "~5.2.4",
-		"expo-font": "~13.3.2",
-		"expo-image": "~2.4.1",
-		"expo-linking": "~7.1.7",
-		"expo-modules-autolinking": "~2.1.14",
-		"expo-router": "~5.1.10",
-		"expo-splash-screen": "0.30.10",
-		"expo-status-bar": "~2.2.3",
-		"expo-system-ui": "~5.0.11",
-		"expo-updates": "~0.28.17",
-		"expo-web-browser": "~14.2.0",
-		"lucide-react-native": "^0.562.0",
-		"react": "19.0.0",
-		"react-dom": "19.0.0",
-		"react-native": "0.79.6",
-		"react-native-gesture-handler": "~2.24.0",
-		"react-native-reanimated": "~3.17.5",
-		"react-native-safe-area-context": "5.4.0",
-		"react-native-screens": "4.11.1",
-		"react-native-svg": "15.11.2",
-		"react-native-track-player": "^4.0.1",
-		"react-native-web": "~0.20.0"
+		"@react-navigation/native": "^7.1.33",
+		"@rntp/player": "5.7.0",
+		"@tanstack/react-query": "5.101.4",
+		"expo": "^55.0.28",
+		"expo-constants": "~55.0.17",
+		"expo-dev-client": "~55.0.37",
+		"expo-font": "~55.0.8",
+		"expo-image": "~55.0.11",
+		"expo-linking": "~55.0.16",
+		"expo-router": "~55.0.17",
+		"expo-splash-screen": "55.0.23",
+		"expo-status-bar": "~55.0.6",
+		"expo-system-ui": "~55.0.20",
+		"expo-updates": "~55.0.26",
+		"expo-web-browser": "~55.0.18",
+		"lucide-react-native": "^1.27.0",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
+		"react-native": "0.83.10",
+		"react-native-safe-area-context": "5.6.2",
+		"react-native-screens": "4.23.0",
+		"react-native-svg": "15.15.3",
+		"react-native-web": "~0.21.2"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.24.0",
-		"@biomejs/biome": "1.8.3",
-		"@types/react": "~19.0.14",
-		"babel-preset-expo": "^13.0.0",
-		"react-test-renderer": "19.0.0",
-		"typescript": "^5.8.3"
-	},
-	"overrides": {
-		"react-refresh": "~0.14.0"
-	},
-	"resolutions": {
-		"react-refresh": "~0.14.0"
-	},
-	"expo": {
-		"doctor": {
-			"reactNativeDirectoryCheck": {
-				"exclude": ["react-native-track-player"]
-			}
-		},
-		"install": {
-			"exclude": ["@react-navigation/native"]
-		}
+		"@babel/core": "^7.29.7",
+		"@biomejs/biome": "2.5.6",
+		"@types/node": "^20.19.43",
+		"@types/react": "~19.2.17",
+		"babel-preset-expo": "^55.0.24",
+		"tsx": "^4.23.1",
+		"typescript": "^5.9.3"
 	},
 	"private": true
 }

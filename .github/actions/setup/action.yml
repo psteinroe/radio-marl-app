@@ -7,19 +7,18 @@ inputs:
 
   pnpm-version:
     description: Version of pnpm to use
-    default: "10"
+    default: "10.12.1"
 
   node-version:
     description: Version of Node.js to use
-    default: "20"
+    default: "20.19.6"
 
   eas-version:
     description: Version of EAS CLI to use
-    default: latest
+    default: "21.4.0"
 
   expo-version:
-    description: Version of Expo CLI to use
-    default: latest
+    description: Optional legacy Expo CLI version to install
 
   expo-token:
     description: Expo token to authenticate with
@@ -49,5 +48,5 @@ runs:
         packager: pnpm
 
     - name: 📦 Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
       shell: bash

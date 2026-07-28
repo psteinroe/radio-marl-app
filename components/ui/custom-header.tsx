@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function CustomHeader({ children }: React.PropsWithChildren) {

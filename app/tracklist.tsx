@@ -16,7 +16,8 @@ import { useRecentTrackList } from "../lib/use-recent-tracklist";
 export default function Tracklist() {
 	const { back } = useRouter();
 
-	const { data, isLoading } = useRecentTrackList();
+	const { data, isError, isLoading, isRefetching, refetch } =
+		useRecentTrackList();
 
 	const [activeButton, setActiveButton] = useState<"x" | false>(false);
 
@@ -35,6 +36,46 @@ export default function Tracklist() {
 		);
 	}
 
+	if (isError) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					alignItems: "center",
+					justifyContent: "center",
+					gap: 16,
+					padding: 24,
+				}}
+			>
+				<Text style={{ textAlign: "center", color: "#6F6F6F" }}>
+					Die Wiedergabeliste konnte nicht geladen werden.
+				</Text>
+				<View style={{ flexDirection: "row", gap: 16 }}>
+					<Pressable
+						onPress={back}
+						accessibilityLabel="Wiedergabeliste schließen"
+						accessibilityRole="button"
+						style={{ padding: 12 }}
+					>
+						<Text style={{ color: "#6F6F6F", fontWeight: "600" }}>
+							Schließen
+						</Text>
+					</Pressable>
+					<Pressable
+						onPress={() => void refetch()}
+						accessibilityLabel="Wiedergabeliste erneut laden"
+						accessibilityRole="button"
+						style={{ padding: 12 }}
+					>
+						<Text style={{ color: "#7731EC", fontWeight: "600" }}>
+							Erneut versuchen
+						</Text>
+					</Pressable>
+				</View>
+			</View>
+		);
+	}
+
 	return (
 		<>
 			<Stack.Screen
@@ -48,6 +89,8 @@ export default function Tracklist() {
 							onPress={back}
 							onPressIn={() => setActiveButton("x")}
 							onPressOut={() => setActiveButton(false)}
+							accessibilityLabel="Wiedergabeliste schließen"
+							accessibilityRole="button"
 						>
 							<X
 								width={32}
@@ -59,10 +102,12 @@ export default function Tracklist() {
 					),
 				}}
 			/>
-			<SafeAreaView edges={["left", "right", "bottom"]}>
+			<SafeAreaView edges={["left", "right", "bottom"]} style={{ flex: 1 }}>
 				<FlatList
 					style={{ marginTop: 8 }}
 					data={data}
+					refreshing={isRefetching}
+					onRefresh={() => void refetch()}
 					renderItem={({ item, index }) => {
 						return (
 							<View
