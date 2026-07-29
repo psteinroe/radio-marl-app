@@ -75,6 +75,7 @@ export default function SongWish() {
 					headerTitle: "",
 					headerRight: () => (
 						<Pressable
+							testID="close_song_wish"
 							onPress={back}
 							onPressIn={() => setActiveButton("x")}
 							onPressOut={() => setActiveButton(false)}
@@ -91,7 +92,11 @@ export default function SongWish() {
 					),
 				}}
 			/>
-			<SafeAreaView edges={["left", "right", "bottom"]} style={{ flex: 1 }}>
+			<SafeAreaView
+				testID="song_wish_screen"
+				edges={["left", "right", "bottom"]}
+				style={{ flex: 1 }}
+			>
 				{/* Search Input */}
 				<View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
 					<View
@@ -105,6 +110,7 @@ export default function SongWish() {
 					>
 						<Search width={20} height={20} color="#6F6F6F" />
 						<TextInput
+							testID="song_search_input"
 							placeholder="Song suchen..."
 							placeholderTextColor="#6F6F6F"
 							value={searchQuery}

@@ -10,6 +10,7 @@ The iOS and Android app for [Radio Marl](https://marl-radio.de), built with Expo
 - Node.js 20.19 or newer
 - pnpm 10.12.1 (`corepack enable`)
 - EAS CLI 21.4.0 for builds and releases
+- Java 17+ and Maestro CLI 2.7.0 for local end-to-end tests
 - An Expo development build; Expo Go cannot load the native audio player
 - Access to the `radio-marl` Expo/EAS project
 
@@ -25,6 +26,20 @@ pnpm start
 ```
 
 Use `pnpm start:ios` or `pnpm start:android` after installing a development client.
+
+## End-to-end tests
+
+Maestro smoke tests cover repeated live-stream start/stop cycles and the song-request navigation flow on Android and iOS. GitHub Actions runs both platforms whenever a pull request is opened, reopened, or updated, and after changes land on `main`. Each job generates and builds a standalone release app, so Metro and a paid EAS plan are not required. JUnit results and Maestro debug output are uploaded as workflow artifacts.
+
+To run a flow locally, build and install the corresponding `e2e-test` profile on an emulator or simulator, install [Maestro CLI](https://docs.maestro.dev/maestro-cli/how-to-install-maestro-cli), then run:
+
+```sh
+pnpm run e2e:android
+# or
+pnpm run e2e:ios
+```
+
+The shared flow is `.maestro/smoke.yml`; each platform script supplies its app identifier. The CI workflow is `.github/workflows/e2e.yml`.
 
 ## Audio behavior
 

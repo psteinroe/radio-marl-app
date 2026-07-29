@@ -1,0 +1,44 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 30000
+- assertVisible:
+    id: "playback_toggle"
+
+# Exercise two complete live-stream start/stop cycles.
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Wiedergabe stoppen"
+    timeout: 30000
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 15000
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Wiedergabe stoppen"
+    timeout: 30000
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 15000
+
+# Verify a network-independent navigation path.
+- tapOn:
+    id: "open_song_wish"
+- assertVisible:
+    id: "song_wish_screen"
+- assertVisible:
+    id: "song_search_input"
+- tapOn:
+    id: "close_song_wish"
+- assertVisible:
+    id: "home_screen"

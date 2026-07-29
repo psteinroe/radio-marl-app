@@ -1,0 +1,163 @@
+name: E2E
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAESTRO_VERSION: 2.7.0
+
+jobs:
+  android:
+    name: Maestro (Android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: 🏗 Setup repo
+        uses: ./.github/actions/setup
+
+      - name: 🧱 Generate Android project
+        run: pnpm exec expo prebuild --platform android --clean --no-install
+        env:
+          CI: "1"
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+          cache-dependency-path: |
+            android/**/*.gradle*
+            android/gradle/wrapper/gradle-wrapper.properties
+            pnpm-lock.yaml
+
+      - name: 🧪 Cache Maestro
+        id: maestro-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.maestro
+          key: maestro-${{ runner.os }}-${{ env.MAESTRO_VERSION }}
+
+      - name: 🧪 Install Maestro
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: ⚡ Enable Android emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: 🤖 Build and test on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            cd android
+            ./gradlew app:assembleRelease --no-daemon
+            cd ..
+            adb install -r android/app/build/outputs/apk/release/app-release.apk
+            mkdir -p artifacts/maestro-android
+            "$HOME/.maestro/bin/maestro" test \
+              -e APP_ID=com.radio_marl.app \
+              --format=JUNIT \
+              --output=artifacts/maestro-android/results.xml \
+              --test-output-dir=artifacts/maestro-android/debug \
+              .maestro/smoke.yml
+
+      - name: 📎 Upload Android test artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: maestro-android
+          path: artifacts/maestro-android
+          if-no-files-found: ignore
+
+  ios:
+    name: Maestro (iOS)
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v7
+
+      - name: 🏗 Setup repo
+        uses: ./.github/actions/setup
+
+      - name: 🍎 Generate iOS project
+        run: pnpm exec expo prebuild --platform ios --clean
+        env:
+          CI: "1"
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: 🧪 Cache Maestro
+        id: maestro-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.maestro
+          key: maestro-${{ runner.os }}-${{ env.MAESTRO_VERSION }}
+
+      - name: 🧪 Install Maestro
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: 📱 Start iOS simulator
+        run: |
+          RUNTIME_ID=$(xcrun simctl list runtimes available -j | jq -r '[.runtimes[] | select(.platform == "iOS" and .isAvailable)][-1].identifier')
+          DEVICE_TYPE_ID=$(xcrun simctl list devicetypes -j | jq -r '[.devicetypes[] | select(.name | startswith("iPhone"))][0].identifier')
+          SIMULATOR_UDID=$(xcrun simctl create "Radio Marl E2E" "$DEVICE_TYPE_ID" "$RUNTIME_ID")
+          echo "SIMULATOR_UDID=$SIMULATOR_UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$SIMULATOR_UDID"
+          xcrun simctl bootstatus "$SIMULATOR_UDID" -b
+
+      - name: 🧱 Build iOS app
+        run: |
+          xcodebuild \
+            -workspace ios/RadioMarl.xcworkspace \
+            -scheme RadioMarl \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: 🧪 Test on iOS simulator
+        run: |
+          APP_PATH=$(find ios/build/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -print -quit)
+          xcrun simctl install "$SIMULATOR_UDID" "$APP_PATH"
+          mkdir -p artifacts/maestro-ios
+          "$HOME/.maestro/bin/maestro" --device="$SIMULATOR_UDID" test \
+            -e APP_ID=com.radio-marl.app \
+            --format=JUNIT \
+            --output=artifacts/maestro-ios/results.xml \
+            --test-output-dir=artifacts/maestro-ios/debug \
+            .maestro/smoke.yml
+
+      - name: 📎 Upload iOS test artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: maestro-ios
+          path: artifacts/maestro-ios
+          if-no-files-found: ignore

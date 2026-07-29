@@ -24,6 +24,17 @@
 			"distribution": "internal",
 			"env": {}
 		},
+		"e2e-test": {
+			"withoutCredentials": true,
+			"node": "20.19.6",
+			"pnpm": "10.12.1",
+			"android": {
+				"buildType": "apk"
+			},
+			"ios": {
+				"simulator": true
+			}
+		},
 		"main": {
 			"distribution": "store",
 			"node": "20.19.6",

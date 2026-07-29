@@ -88,6 +88,7 @@ export default function Home() {
 				}}
 			/>
 			<SafeAreaView
+				testID="home_screen"
 				edges={["left", "right"]}
 				style={{
 					flex: 1,
@@ -162,6 +163,7 @@ export default function Home() {
 						</Text>
 					</View>
 					<Pressable
+						testID="playback_toggle"
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
 						accessibilityLabel={
@@ -279,6 +281,7 @@ export default function Home() {
 							style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
 						>
 							<Pressable
+								testID="open_song_wish"
 								onPress={() => push("./songwish")}
 								onPressIn={() => setActiveButton("songwish")}
 								onPressOut={() => setActiveButton(false)}
