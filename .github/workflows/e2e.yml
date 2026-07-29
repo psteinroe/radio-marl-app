@@ -68,9 +68,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            cd android
-            ./gradlew app:assembleRelease --no-daemon
-            cd ..
+            ./android/gradlew -p android app:assembleRelease --no-daemon
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             mkdir -p artifacts/maestro-android
             "$HOME/.maestro/bin/maestro" test \
