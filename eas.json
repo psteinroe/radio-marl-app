@@ -28,6 +28,9 @@
 			"withoutCredentials": true,
 			"node": "20.19.6",
 			"pnpm": "10.12.1",
+			"env": {
+				"EXPO_PUBLIC_E2E": "true"
+			},
 			"android": {
 				"buildType": "apk"
 			},

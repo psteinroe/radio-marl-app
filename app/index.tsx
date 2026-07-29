@@ -6,6 +6,7 @@ import { Globe, ListMusic, Mail, Pause, Play, Star } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
+	Alert,
 	Dimensions,
 	Pressable,
 	Text,
@@ -17,6 +18,7 @@ import { RadioMarlHeader } from "../components/icons/radio-marl-header";
 import { WhatsApp } from "../components/icons/whatsapp";
 import { CustomFooter } from "../components/ui/custom-footer";
 import { CustomHeader } from "../components/ui/custom-header";
+import { radioApi } from "../lib/radio-api";
 import { radioPlayer } from "../lib/radio-player";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
 
@@ -31,6 +33,20 @@ const PLAY_BUTTON_SIZE = isSmallScreen ? 60 : 72;
 const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
+
+const openExternalLink = (url: string) => {
+	if (radioApi.isE2E) {
+		Alert.alert("Externer Link", url);
+		return;
+	}
+
+	void Linking.openURL(url).catch(() => {
+		Alert.alert(
+			"Link konnte nicht geöffnet werden",
+			"Bitte versuche es später erneut.",
+		);
+	});
+};
 
 export default function Home() {
 	const playing = useIsPlaying();
@@ -117,10 +133,15 @@ export default function Home() {
 						}}
 					>
 						<Image
+							testID="now_playing_artwork"
 							cachePolicy="memory-disk"
-							source={{
-								uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${encodedTrackTitle}`,
-							}}
+							source={
+								radioApi.isE2E
+									? require("../assets/images/icon.png")
+									: {
+											uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${encodedTrackTitle}`,
+										}
+							}
 							alt="cover art"
 							style={{
 								width: COVER_SIZE,
@@ -137,6 +158,7 @@ export default function Home() {
 						}}
 					>
 						<Text
+							testID="now_playing_title"
 							style={{
 								fontSize: isSmallScreen ? 20 : 24,
 								fontWeight: "700",
@@ -151,6 +173,7 @@ export default function Home() {
 							{data?.currenttrack_title || "Radio Marl"}
 						</Text>
 						<Text
+							testID="now_playing_artist"
 							style={{
 								fontSize: isSmallScreen ? 14 : 16,
 								textAlign: "center",
@@ -188,6 +211,7 @@ export default function Home() {
 					>
 						{playerState === PlaybackState.Buffering ? (
 							<ActivityIndicator
+								testID="playback_buffering"
 								color="white"
 								size={isSmallScreen ? "small" : "large"}
 							/>
@@ -221,13 +245,16 @@ export default function Home() {
 							}}
 						>
 							<Pressable
+								testID="open_whatsapp"
 								onPress={() =>
-									Linking.openURL(
+									openExternalLink(
 										"https://chat.whatsapp.com/DpRbHu7DLEvG9zbkeZXknN",
 									)
 								}
 								onPressIn={() => setActiveButton("whatsapp")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="WhatsApp-Gruppe öffnen"
+								accessibilityRole="link"
 							>
 								<WhatsApp
 									viewBox="0 0 24 24"
@@ -238,11 +265,14 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
+								testID="open_facebook"
 								onPress={() =>
-									Linking.openURL("https://www.facebook.com/marlradio")
+									openExternalLink("https://www.facebook.com/marlradio")
 								}
 								onPressIn={() => setActiveButton("facebook")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Facebook öffnen"
+								accessibilityRole="link"
 							>
 								<Facebook
 									viewBox="0 0 24 24"
@@ -253,11 +283,14 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
+								testID="open_email"
 								onPress={() =>
-									Linking.openURL("mailto:thomas.wilke@radio-marl.de")
+									openExternalLink("mailto:thomas.wilke@radio-marl.de")
 								}
 								onPressIn={() => setActiveButton("mail")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="E-Mail schreiben"
+								accessibilityRole="link"
 							>
 								<Mail
 									width={ICON_SIZE}
@@ -266,9 +299,12 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
-								onPress={() => Linking.openURL("https://marl-radio.de")}
+								testID="open_website"
+								onPress={() => openExternalLink("https://marl-radio.de")}
 								onPressIn={() => setActiveButton("globe")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Radio-Marl-Webseite öffnen"
+								accessibilityRole="link"
 							>
 								<Globe
 									width={ICON_SIZE}
@@ -317,6 +353,7 @@ export default function Home() {
 								)}
 							</Pressable>
 							<Pressable
+								testID="open_tracklist"
 								onPress={() => push("./tracklist")}
 								onPressIn={() => setActiveButton("tracklist")}
 								onPressOut={() => setActiveButton(false)}

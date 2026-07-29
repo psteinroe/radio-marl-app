@@ -30,18 +30,22 @@ export default function SongWish() {
 		data: recentRequests,
 		isError: recentError,
 		isLoading: recentLoading,
+		isRefetching: recentRefetching,
 		refetch: refetchRecent,
 	} = useRecentRequests();
 	const {
 		data: searchResults,
 		isError: searchError,
 		isLoading: searchLoading,
+		isDebouncing: searchDebouncing,
 		refetch: refetchSearch,
 	} = useSongSearch(searchQuery);
 	const requestMutation = useSongRequestMutation();
 
 	const isSearching = searchQuery.trim().length > 0;
-	const isLoading = isSearching ? searchLoading : recentLoading;
+	const isLoading = isSearching
+		? searchLoading || searchDebouncing
+		: recentLoading;
 	const isError = isSearching ? searchError : recentError;
 
 	const handleRequest = async (songId: number) => {
@@ -55,6 +59,7 @@ export default function SongWish() {
 			Alert.alert(
 				"Songwunsch fehlgeschlagen",
 				"Der Wunsch konnte nicht gesendet werden. Bitte versuche es erneut.",
+				[{ text: "OK" }],
 			);
 		} finally {
 			setLoadingSongId(null);
@@ -126,7 +131,12 @@ export default function SongWish() {
 							}}
 						/>
 						{isSearching && (
-							<Pressable onPress={clearSearch}>
+							<Pressable
+								testID="clear_song_search"
+								onPress={clearSearch}
+								accessibilityLabel="Songsuche löschen"
+								accessibilityRole="button"
+							>
 								<X width={20} height={20} color="#6F6F6F" />
 							</Pressable>
 						)}
@@ -135,7 +145,10 @@ export default function SongWish() {
 
 				{/* Section Header */}
 				<View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
-					<Text style={{ fontSize: 14, fontWeight: "500", color: "#6F6F6F" }}>
+					<Text
+						testID="song_wish_section_title"
+						style={{ fontSize: 14, fontWeight: "500", color: "#6F6F6F" }}
+					>
 						{isSearching ? "Suchergebnisse" : "Letzte Wünsche"}
 					</Text>
 				</View>
@@ -143,12 +156,14 @@ export default function SongWish() {
 				{/* Loading State */}
 				{isLoading ? (
 					<View
+						testID="song_wish_loading"
 						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
 					>
 						<ActivityIndicator size="large" color="#7731EC" />
 					</View>
 				) : isError ? (
 					<View
+						testID="song_wish_error"
 						style={{
 							flex: 1,
 							alignItems: "center",
@@ -161,6 +176,7 @@ export default function SongWish() {
 							Die Songwünsche konnten nicht geladen werden.
 						</Text>
 						<Pressable
+							testID="retry_song_wishes"
 							onPress={() =>
 								void (isSearching ? refetchSearch() : refetchRecent())
 							}
@@ -176,11 +192,13 @@ export default function SongWish() {
 				) : isSearching ? (
 					/* Search Results */
 					<FlatList
+						testID="song_search_results"
 						style={{ paddingHorizontal: 24 }}
 						data={searchResults || []}
 						keyExtractor={(item) => item.id.toString()}
 						ListEmptyComponent={
 							<Text
+								testID="song_search_empty"
 								style={{
 									textAlign: "center",
 									paddingVertical: 32,
@@ -196,6 +214,7 @@ export default function SongWish() {
 
 							return (
 								<View
+									testID={`song_search_result_${item.id}`}
 									style={{
 										flexDirection: "row",
 										alignItems: "center",
@@ -217,11 +236,16 @@ export default function SongWish() {
 										{item.title}
 									</Text>
 									<Pressable
+										testID={`request_song_${item.id}`}
 										onPress={() => handleRequest(item.id)}
 										disabled={
 											isRequested || isLoadingThis || requestMutation.isPending
 										}
-										accessibilityLabel={`Song wünschen: ${item.title}`}
+										accessibilityLabel={
+											isRequested
+												? `Gewünscht: ${item.title}`
+												: `Song wünschen: ${item.title}`
+										}
 										accessibilityRole="button"
 										accessibilityState={{
 											disabled:
@@ -238,7 +262,11 @@ export default function SongWish() {
 										}}
 									>
 										{isLoadingThis ? (
-											<ActivityIndicator size="small" color="#7731EC" />
+											<ActivityIndicator
+												testID={`request_song_loading_${item.id}`}
+												size="small"
+												color="#7731EC"
+											/>
 										) : (
 											<Star
 												width={24}
@@ -255,11 +283,15 @@ export default function SongWish() {
 				) : (
 					/* Recent Requests */
 					<FlatList
+						testID="recent_song_wishes"
 						style={{ paddingHorizontal: 24 }}
 						data={recentRequests || []}
+						refreshing={recentRefetching}
+						onRefresh={() => void refetchRecent()}
 						keyExtractor={(item, index) => `${item.title}-${index}`}
 						ListEmptyComponent={
 							<Text
+								testID="recent_song_wishes_empty"
 								style={{
 									textAlign: "center",
 									paddingVertical: 32,
@@ -271,6 +303,7 @@ export default function SongWish() {
 						}
 						renderItem={({ item, index }) => (
 							<View
+								testID={`recent_song_wish_${index}`}
 								style={{
 									paddingVertical: 12,
 									borderBottomWidth: 1,

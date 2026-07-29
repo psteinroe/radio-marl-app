@@ -1,4 +1,5 @@
 appId: ${APP_ID}
+name: Real stream playback and app lifecycle
 ---
 - launchApp:
     clearState: true
@@ -6,10 +7,31 @@ appId: ${APP_ID}
     visible:
       id: "home_screen"
     timeout: 30000
-- assertVisible:
-    id: "playback_toggle"
+- assertVisible: "Radio abspielen"
 
-# Exercise two complete live-stream start/stop cycles.
+# This flow intentionally retains the real stream integration. Playing is the
+# strongest portable signal available to Maestro; audible output still needs a
+# real-device check.
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Wiedergabe stoppen"
+    timeout: 30000
+- pressKey: home
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 15000
+- assertVisible: "Wiedergabe stoppen"
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 15000
+
+# A second complete cycle catches stale native state after stopping.
 - tapOn:
     id: "playback_toggle"
 - extendedWaitUntil:
@@ -20,25 +42,3 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: "Radio abspielen"
     timeout: 15000
-- tapOn:
-    id: "playback_toggle"
-- extendedWaitUntil:
-    visible: "Wiedergabe stoppen"
-    timeout: 30000
-- tapOn:
-    id: "playback_toggle"
-- extendedWaitUntil:
-    visible: "Radio abspielen"
-    timeout: 15000
-
-# Verify a network-independent navigation path.
-- tapOn:
-    id: "open_song_wish"
-- assertVisible:
-    id: "song_wish_screen"
-- assertVisible:
-    id: "song_search_input"
-- tapOn:
-    id: "close_song_wish"
-- assertVisible:
-    id: "home_screen"

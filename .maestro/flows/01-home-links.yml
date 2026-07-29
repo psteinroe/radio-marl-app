@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+name: Home metadata and external links
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 30000
+- extendedWaitUntil:
+    visible: "Maestro Live Track"
+    timeout: 15000
+- assertVisible: "Radio Marl Test"
+- assertVisible:
+    id: "now_playing_artwork"
+- assertVisible:
+    id: "playback_toggle"
+- assertVisible:
+    id: "open_song_wish"
+- assertVisible:
+    id: "open_tracklist"
+
+# E2E builds replace the operating-system handoff with a deterministic alert,
+# allowing every control and exact destination to be verified on both platforms.
+- tapOn:
+    id: "open_whatsapp"
+- assertVisible: "Externer Link"
+- assertVisible: "https://chat.whatsapp.com/DpRbHu7DLEvG9zbkeZXknN"
+- tapOn: "OK"
+- tapOn:
+    id: "open_facebook"
+- assertVisible: "https://www.facebook.com/marlradio"
+- tapOn: "OK"
+- tapOn:
+    id: "open_email"
+- assertVisible: "mailto:thomas.wilke@radio-marl.de"
+- tapOn: "OK"
+- tapOn:
+    id: "open_website"
+- assertVisible: "https://marl-radio.de"
+- tapOn: "OK"
+- assertVisible:
+    id: "home_screen"

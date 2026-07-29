@@ -1,12 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { radioApi, type TrackInfo } from "./radio-api";
 
-export type TrackInfo = {
-	title: string;
-	tracktitle: string;
-	trackartist: string;
-	started: string;
-	artworkid: string;
-};
+export type { TrackInfo } from "./radio-api";
 
 export type TrackInfoParsed = {
 	title: string;
@@ -23,11 +18,7 @@ export const useRecentTrackList = () => {
 		queryKey: ["recenttracklist"],
 		staleTime: 30_000,
 		queryFn: async () => {
-			const res = await fetch(
-				"https://c32.radioboss.fm/w/recenttrackslist?u=152",
-			);
-			if (!res.ok) throw new Error("Network response was not ok");
-			const trackInfo: TrackInfo[] = await res.json();
+			const trackInfo: TrackInfo[] = await radioApi.getRecentTrackList();
 			return trackInfo.map<TrackInfoParsed>((track) => ({
 				...track,
 				// RadioBoss returns `YYYY-MM-DD HH:mm:ss`; normalize it to an ISO-like
@@ -35,5 +26,6 @@ export const useRecentTrackList = () => {
 				started: new Date(track.started.replace(" ", "T")),
 			}));
 		},
+		retry: radioApi.isE2E ? false : undefined,
 	});
 };
