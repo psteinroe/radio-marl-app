@@ -53,7 +53,6 @@ export default function Tracklist() {
 			>
 				{isLoading ? (
 					<View
-						testID="tracklist_loading"
 						style={{
 							flex: 1,
 							alignItems: "center",
@@ -61,7 +60,11 @@ export default function Tracklist() {
 							gap: 16,
 						}}
 					>
-						<ActivityIndicator size="large" color="#7731EC" />
+						<ActivityIndicator
+							testID="tracklist_loading"
+							size="large"
+							color="#7731EC"
+						/>
 					</View>
 				) : isError ? (
 					<View

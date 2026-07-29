@@ -156,10 +156,13 @@ export default function SongWish() {
 				{/* Loading State */}
 				{isLoading ? (
 					<View
-						testID="song_wish_loading"
 						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
 					>
-						<ActivityIndicator size="large" color="#7731EC" />
+						<ActivityIndicator
+							testID="song_wish_loading"
+							size="large"
+							color="#7731EC"
+						/>
 					</View>
 				) : isError ? (
 					<View
