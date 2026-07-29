@@ -88,7 +88,7 @@ const E2E_SEARCH_RESULTS: SongSearchResult[] = [
 export function createRadioApi({
 	fetchImpl = fetch,
 	e2e = process.env.EXPO_PUBLIC_E2E === "true",
-	fixtureDelayMs = 1_200,
+	fixtureDelayMs = 3_000,
 }: RadioApiOptions = {}) {
 	let recentRequestCalls = 0;
 	let trackListCalls = 0;
