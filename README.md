@@ -43,7 +43,7 @@ The shared flow is `.maestro/smoke.yml`; each platform script supplies its app i
 
 ## Audio behavior
 
-The app uses RNTP 5.7 on React Native's New Architecture. Expo SDK 55 is intentional: it supports the New Architecture while retaining the app's iOS 15.1 minimum; SDK 56 and 57 require iOS 16.4. The live stream is marked as live and configured with `liveResumeBehavior: "live-edge"`, so starting playback from the app, lock screen, notification, Android Auto, or CarPlay does not replay a stale buffered position. Network polling is suspended while the app is backgrounded; audio playback is not.
+The app uses RNTP 5.7 on React Native's New Architecture. The minimum supported iOS version is 16.0 because RNTP v5 requires it. Expo SDK 55 is intentional: SDK 56 and 57 would raise the minimum further to iOS 16.4. The live stream is marked as live and configured with `liveResumeBehavior: "live-edge"`, so starting playback from the app, lock screen, notification, Android Auto, or CarPlay does not replay a stale buffered position. Network polling is suspended while the app is backgrounded; audio playback is not.
 
 ## Deployment
 

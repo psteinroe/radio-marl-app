@@ -68,7 +68,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./android/gradlew -p android app:assembleRelease --no-daemon
+            ./android/gradlew -p android app:assembleRelease -PreactNativeArchitectures=x86_64 --no-daemon
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             mkdir -p artifacts/maestro-android
             "$HOME/.maestro/bin/maestro" test \
