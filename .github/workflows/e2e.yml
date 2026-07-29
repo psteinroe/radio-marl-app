@@ -27,6 +27,12 @@ jobs:
       - name: 🏗 Setup repo
         uses: ./.github/actions/setup
 
+      - name: 🧹 Free Android build disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+          df -h /
+
       - name: 🧱 Generate Android project
         run: pnpm exec expo prebuild --platform android --clean --no-install
         env:
@@ -66,6 +72,8 @@ jobs:
           api-level: 36
           arch: x86_64
           profile: pixel_6
+          ram-size: 2048M
+          disk-size: 2048M
           disable-animations: true
           pre-emulator-launch-script: >-
             ./android/gradlew -p android app:assembleRelease
