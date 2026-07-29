@@ -1,0 +1,9 @@
+flows:
+  - "*.yml"
+executionOrder:
+  continueOnFailure: true
+  flowsOrder:
+    - 01-home-links
+    - 02-tracklist
+    - 03-song-wishes
+    - 04-player

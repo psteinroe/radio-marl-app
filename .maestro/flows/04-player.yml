@@ -3,6 +3,12 @@ name: Real stream playback and app lifecycle
 ---
 - launchApp:
     clearState: true
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
 - extendedWaitUntil:
     visible:
       id: "home_screen"
@@ -20,6 +26,12 @@ name: Real stream playback and app lifecycle
 - pressKey: home
 - launchApp:
     stopApp: false
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
 - extendedWaitUntil:
     visible:
       id: "home_screen"

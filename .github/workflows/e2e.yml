@@ -73,7 +73,7 @@ jobs:
           api-level: 36
           arch: x86_64
           profile: pixel_6
-          ram-size: 2048M
+          ram-size: 3072M
           disk-size: 2048M
           disable-animations: true
           pre-emulator-launch-script: >-
@@ -85,7 +85,7 @@ jobs:
           script: |
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             mkdir -p artifacts/maestro-android
-            "$HOME/.maestro/bin/maestro" test -e APP_ID=com.radio_marl.app --format=JUNIT --output=artifacts/maestro-android/results.xml --test-output-dir=artifacts/maestro-android/debug .maestro/flows
+            "$HOME/.maestro/bin/maestro" test --config=.maestro/flows/config.yaml -e APP_ID=com.radio_marl.app --format=JUNIT --output=artifacts/maestro-android/results.xml --test-output-dir=artifacts/maestro-android/debug .maestro/flows
 
       - name: 📎 Upload Android test artifacts
         if: always()
@@ -155,6 +155,7 @@ jobs:
           xcrun simctl install "$SIMULATOR_UDID" "$APP_PATH"
           mkdir -p artifacts/maestro-ios
           "$HOME/.maestro/bin/maestro" --device="$SIMULATOR_UDID" test \
+            --config=.maestro/flows/config.yaml \
             -e APP_ID=com.radio-marl.app \
             --format=JUNIT \
             --output=artifacts/maestro-ios/results.xml \

@@ -3,6 +3,12 @@ name: Tracklist error retry refresh and close
 ---
 - launchApp:
     clearState: true
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
 - extendedWaitUntil:
     visible:
       id: "home_screen"
