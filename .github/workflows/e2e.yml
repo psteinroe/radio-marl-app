@@ -80,15 +80,11 @@ jobs:
             -PreactNativeArchitectures=x86_64
             -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
             --no-daemon
+          # This action runs each script line in a separate shell.
           script: |
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             mkdir -p artifacts/maestro-android
-            "$HOME/.maestro/bin/maestro" test \
-              -e APP_ID=com.radio_marl.app \
-              --format=JUNIT \
-              --output=artifacts/maestro-android/results.xml \
-              --test-output-dir=artifacts/maestro-android/debug \
-              .maestro/smoke.yml
+            "$HOME/.maestro/bin/maestro" test -e APP_ID=com.radio_marl.app --format=JUNIT --output=artifacts/maestro-android/results.xml --test-output-dir=artifacts/maestro-android/debug .maestro/smoke.yml
 
       - name: 📎 Upload Android test artifacts
         if: always()
