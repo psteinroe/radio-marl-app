@@ -67,8 +67,12 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
+          pre-emulator-launch-script: >-
+            ./android/gradlew -p android app:assembleRelease
+            -PreactNativeArchitectures=x86_64
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            --no-daemon
           script: |
-            ./android/gradlew -p android app:assembleRelease -PreactNativeArchitectures=x86_64 --no-daemon
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             mkdir -p artifacts/maestro-android
             "$HOME/.maestro/bin/maestro" test \
