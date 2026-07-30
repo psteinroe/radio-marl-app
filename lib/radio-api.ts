@@ -93,11 +93,9 @@ export function createRadioApi({
 	let recentRequestCalls = 0;
 	let trackListCalls = 0;
 
-	const waitForFixture = (multiplier = 1) =>
+	const waitForFixture = () =>
 		fixtureDelayMs > 0
-			? new Promise<void>((resolve) =>
-					setTimeout(resolve, fixtureDelayMs * multiplier),
-				)
+			? new Promise<void>((resolve) => setTimeout(resolve, fixtureDelayMs))
 			: Promise.resolve();
 
 	const fixtureFailure = () => new Error("E2E fixture failure");
@@ -156,8 +154,7 @@ export function createRadioApi({
 
 		async makeSongRequest(songId: number): Promise<unknown> {
 			if (e2e) {
-				// Keep the pending state observable after Maestro's tap settling.
-				await waitForFixture(6);
+				await waitForFixture();
 				if (songId === 1002) throw fixtureFailure();
 				return { success: true };
 			}

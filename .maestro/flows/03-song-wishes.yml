@@ -43,16 +43,15 @@ name: Song wishes search request errors and close
 - assertVisible: "Maestro Fehler"
 - tapOn:
     id: "request_song_1001"
-- assertVisible: "Songwunsch wird gesendet: Maestro Erfolg"
+- extendedWaitUntil:
+    visible: "Gewünscht: Maestro Erfolg"
+    timeout: 15000
 - assertVisible:
     id: "request_song_1001"
     enabled: false
 - assertVisible:
     id: "request_song_1002"
-    enabled: false
-- extendedWaitUntil:
-    visible: "Gewünscht: Maestro Erfolg"
-    timeout: 15000
+    enabled: true
 - tapOn:
     id: "request_song_1002"
 - assertVisible: "Songwunsch fehlgeschlagen"
