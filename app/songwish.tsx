@@ -156,13 +156,17 @@ export default function SongWish() {
 				{/* Loading State */}
 				{isLoading ? (
 					<View
-						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 12,
+						}}
 					>
-						<ActivityIndicator
-							testID="song_wish_loading"
-							size="large"
-							color="#7731EC"
-						/>
+						<ActivityIndicator size="large" color="#7731EC" />
+						<Text testID="song_wish_loading" style={{ color: "#6F6F6F" }}>
+							Songwünsche werden geladen …
+						</Text>
 					</View>
 				) : isError ? (
 					<View
@@ -245,9 +249,11 @@ export default function SongWish() {
 											isRequested || isLoadingThis || requestMutation.isPending
 										}
 										accessibilityLabel={
-											isRequested
-												? `Gewünscht: ${item.title}`
-												: `Song wünschen: ${item.title}`
+											isLoadingThis
+												? `Songwunsch wird gesendet: ${item.title}`
+												: isRequested
+													? `Gewünscht: ${item.title}`
+													: `Song wünschen: ${item.title}`
 										}
 										accessibilityRole="button"
 										accessibilityState={{

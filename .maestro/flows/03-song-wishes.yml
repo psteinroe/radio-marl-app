@@ -47,8 +47,10 @@ name: Song wishes search request errors and close
 - assertVisible: "Maestro Fehler"
 - tapOn:
     id: "request_song_1001"
+- assertVisible: "Songwunsch wird gesendet: Maestro Erfolg"
 - assertVisible:
-    id: "request_song_loading_1001"
+    id: "request_song_1001"
+    enabled: false
 - assertVisible:
     id: "request_song_1002"
     enabled: false

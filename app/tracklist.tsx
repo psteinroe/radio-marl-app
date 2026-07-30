@@ -60,11 +60,10 @@ export default function Tracklist() {
 							gap: 16,
 						}}
 					>
-						<ActivityIndicator
-							testID="tracklist_loading"
-							size="large"
-							color="#7731EC"
-						/>
+						<ActivityIndicator size="large" color="#7731EC" />
+						<Text testID="tracklist_loading" style={{ color: "#6F6F6F" }}>
+							Wiedergabeliste wird geladen …
+						</Text>
 					</View>
 				) : isError ? (
 					<View
