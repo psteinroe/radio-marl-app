@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+name: Complete app interaction suite
+---
+- runFlow:
+    file: flows/01-home-links.yml
+    label: Home metadata and external links
+- runFlow:
+    file: flows/02-tracklist.yml
+    label: Tracklist states and interactions
+- runFlow:
+    file: flows/03-song-wishes.yml
+    label: Song-wish states and interactions
+- runFlow:
+    file: flows/04-player.yml
+    label: Real stream playback and app lifecycle

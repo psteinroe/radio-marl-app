@@ -39,7 +39,7 @@ pnpm run e2e:android
 pnpm run e2e:ios
 ```
 
-The shared suite is `.maestro/flows`; each platform script supplies its app identifier. E2E builds set `EXPO_PUBLIC_E2E=true`, which replaces mutable RadioBoss API data and operating-system link handoffs with deterministic fixtures. The player flow intentionally retains the real Radio Marl stream. Maestro can verify that RNTP reaches and retains its playing state, but it cannot prove audible output or exact live-edge position; keep those checks in the real-device release checklist. The CI workflow is `.github/workflows/e2e.yml`.
+The shared suite entrypoint is `.maestro/suite.yml`, with focused journeys in `.maestro/flows`; each platform script supplies its app identifier. E2E builds set `EXPO_PUBLIC_E2E=true`, which replaces mutable RadioBoss API data and operating-system link handoffs with deterministic fixtures. The player flow intentionally retains the real Radio Marl stream. Maestro can verify that RNTP reaches and retains its playing state, but it cannot prove audible output or exact live-edge position; keep those checks in the real-device release checklist. The CI workflow is `.github/workflows/e2e.yml`.
 
 ## Audio behavior
 

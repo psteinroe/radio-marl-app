@@ -88,14 +88,16 @@ const E2E_SEARCH_RESULTS: SongSearchResult[] = [
 export function createRadioApi({
 	fetchImpl = fetch,
 	e2e = process.env.EXPO_PUBLIC_E2E === "true",
-	fixtureDelayMs = 3_000,
+	fixtureDelayMs = 500,
 }: RadioApiOptions = {}) {
 	let recentRequestCalls = 0;
 	let trackListCalls = 0;
 
-	const waitForFixture = () =>
+	const waitForFixture = (multiplier = 1) =>
 		fixtureDelayMs > 0
-			? new Promise<void>((resolve) => setTimeout(resolve, fixtureDelayMs))
+			? new Promise<void>((resolve) =>
+					setTimeout(resolve, fixtureDelayMs * multiplier),
+				)
 			: Promise.resolve();
 
 	const fixtureFailure = () => new Error("E2E fixture failure");
@@ -154,7 +156,8 @@ export function createRadioApi({
 
 		async makeSongRequest(songId: number): Promise<unknown> {
 			if (e2e) {
-				await waitForFixture();
+				// Keep the pending state observable after Maestro's tap settling.
+				await waitForFixture(6);
 				if (songId === 1002) throw fixtureFailure();
 				return { success: true };
 			}

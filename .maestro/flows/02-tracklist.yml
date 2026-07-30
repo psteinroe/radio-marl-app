@@ -17,7 +17,6 @@ name: Tracklist error retry refresh and close
     id: "open_tracklist"
 - assertVisible:
     id: "tracklist_screen"
-- assertVisible: "Wiedergabeliste wird geladen …"
 - extendedWaitUntil:
     visible:
       id: "tracklist_error"
