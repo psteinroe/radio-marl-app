@@ -17,8 +17,7 @@ name: Song wishes search request errors and close
     id: "open_song_wish"
 - assertVisible:
     id: "song_wish_screen"
-- assertVisible:
-    id: "song_wish_loading"
+- assertVisible: "Songwünsche werden geladen …"
 - extendedWaitUntil:
     visible:
       id: "song_wish_error"
@@ -37,8 +36,7 @@ name: Song wishes search request errors and close
     id: "song_search_input"
 - inputText: "maestro"
 - hideKeyboard
-- assertVisible:
-    id: "song_wish_loading"
+- assertVisible: "Songwünsche werden geladen …"
 - extendedWaitUntil:
     visible:
       id: "song_search_result_1001"
@@ -74,8 +72,7 @@ name: Song wishes search request errors and close
     id: "song_search_input"
 - inputText: "maestro leer"
 - hideKeyboard
-- assertVisible:
-    id: "song_wish_loading"
+- assertVisible: "Songwünsche werden geladen …"
 - extendedWaitUntil:
     visible:
       id: "song_search_empty"
@@ -89,8 +86,7 @@ name: Song wishes search request errors and close
     id: "song_search_input"
 - inputText: "maestro fehler"
 - hideKeyboard
-- assertVisible:
-    id: "song_wish_loading"
+- assertVisible: "Songwünsche werden geladen …"
 - extendedWaitUntil:
     visible:
       id: "song_wish_error"
