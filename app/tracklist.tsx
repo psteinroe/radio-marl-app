@@ -15,25 +15,9 @@ import { useRecentTrackList } from "../lib/use-recent-tracklist";
 
 export default function Tracklist() {
 	const { back } = useRouter();
-
-	const { data, isLoading } = useRecentTrackList();
-
+	const { data, isError, isLoading, isRefetching, refetch } =
+		useRecentTrackList();
 	const [activeButton, setActiveButton] = useState<"x" | false>(false);
-
-	if (isLoading) {
-		return (
-			<View
-				style={{
-					height: "100%",
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 16,
-				}}
-			>
-				<ActivityIndicator size="large" />
-			</View>
-		);
-	}
 
 	return (
 		<>
@@ -45,9 +29,12 @@ export default function Tracklist() {
 					headerTitle: "",
 					headerRight: () => (
 						<Pressable
+							testID="close_tracklist"
 							onPress={back}
 							onPressIn={() => setActiveButton("x")}
 							onPressOut={() => setActiveButton(false)}
+							accessibilityLabel="Wiedergabeliste schließen"
+							accessibilityRole="button"
 						>
 							<X
 								width={32}
@@ -59,17 +46,74 @@ export default function Tracklist() {
 					),
 				}}
 			/>
-			<SafeAreaView edges={["left", "right", "bottom"]}>
-				<FlatList
-					style={{ marginTop: 8 }}
-					data={data}
-					renderItem={({ item, index }) => {
-						return (
-							<View
+			<SafeAreaView
+				testID="tracklist_screen"
+				edges={["left", "right", "bottom"]}
+				style={{ flex: 1 }}
+			>
+				{isLoading ? (
+					<View
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 16,
+						}}
+					>
+						<ActivityIndicator size="large" color="#7731EC" />
+						<Text testID="tracklist_loading" style={{ color: "#6F6F6F" }}>
+							Wiedergabeliste wird geladen …
+						</Text>
+					</View>
+				) : isError ? (
+					<View
+						testID="tracklist_error"
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 16,
+							padding: 24,
+						}}
+					>
+						<Text style={{ textAlign: "center", color: "#6F6F6F" }}>
+							Die Wiedergabeliste konnte nicht geladen werden.
+						</Text>
+						<Pressable
+							testID="retry_tracklist"
+							onPress={() => void refetch()}
+							accessibilityLabel="Wiedergabeliste erneut laden"
+							accessibilityRole="button"
+							style={{ padding: 12 }}
+						>
+							<Text style={{ color: "#7731EC", fontWeight: "600" }}>
+								Erneut versuchen
+							</Text>
+						</Pressable>
+					</View>
+				) : (
+					<FlatList
+						testID="tracklist"
+						style={{ marginTop: 8 }}
+						data={data || []}
+						refreshing={isRefetching}
+						onRefresh={() => void refetch()}
+						ListEmptyComponent={
+							<Text
+								testID="tracklist_empty"
 								style={{
-									marginBottom: 20,
-									paddingHorizontal: 24,
+									textAlign: "center",
+									paddingVertical: 32,
+									color: "#6F6F6F",
 								}}
+							>
+								Noch keine Titel
+							</Text>
+						}
+						renderItem={({ item, index }) => (
+							<View
+								testID={index === 0 ? "current_track" : `track_${index}`}
+								style={{ marginBottom: 20, paddingHorizontal: 24 }}
 							>
 								<Text
 									style={{
@@ -80,12 +124,7 @@ export default function Tracklist() {
 								>
 									{item.started.toLocaleString()}
 								</Text>
-								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-									}}
-								>
+								<View style={{ flexDirection: "row", alignItems: "center" }}>
 									{index === 0 && (
 										<Playing
 											style={{ marginRight: 6 }}
@@ -107,19 +146,15 @@ export default function Tracklist() {
 									</Text>
 								</View>
 								<Text
-									style={{
-										fontSize: 14,
-										color: "#6F6F6F",
-										marginTop: 2,
-									}}
+									style={{ fontSize: 14, color: "#6F6F6F", marginTop: 2 }}
 									numberOfLines={1}
 								>
 									{item.trackartist}
 								</Text>
 							</View>
-						);
-					}}
-				/>
+						)}
+					/>
+				)}
 				<StatusBar style="light" />
 			</SafeAreaView>
 		</>

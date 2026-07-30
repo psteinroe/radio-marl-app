@@ -1,0 +1,56 @@
+appId: ${APP_ID}
+name: Real stream playback and app lifecycle
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 30000
+- assertVisible: "Radio abspielen"
+
+# This flow intentionally retains the real stream integration. Playing is the
+# strongest portable signal available to Maestro; audible output still needs a
+# real-device check.
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Wiedergabe stoppen"
+    timeout: 30000
+- pressKey: home
+- launchApp:
+    stopApp: false
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 15000
+- assertVisible: "Wiedergabe stoppen"
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 15000
+
+# A second complete cycle catches stale native state after stopping.
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Wiedergabe stoppen"
+    timeout: 30000
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 15000

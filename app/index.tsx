@@ -1,28 +1,26 @@
+import { PlaybackState, useIsPlaying, usePlaybackState } from "@rntp/player";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
 import { Globe, ListMusic, Mail, Pause, Play, Star } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
+	Alert,
 	Dimensions,
 	Pressable,
 	Text,
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TrackPlayer, {
-	useIsPlaying,
-	usePlaybackState,
-} from "react-native-track-player";
 import { Facebook } from "../components/icons/facebook";
 import { RadioMarlHeader } from "../components/icons/radio-marl-header";
 import { WhatsApp } from "../components/icons/whatsapp";
 import { CustomFooter } from "../components/ui/custom-footer";
 import { CustomHeader } from "../components/ui/custom-header";
+import { radioApi } from "../lib/radio-api";
+import { radioPlayer } from "../lib/radio-player";
 import { useNowPlayingInfo } from "../lib/use-now-playing-info";
-import { useRecentTrackList } from "../lib/use-recent-tracklist";
-import { TRACK, useResetOnError } from "../lib/use-setup-player";
 
 const { width, height } = Dimensions.get("window");
 
@@ -36,23 +34,37 @@ const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 
+const openExternalLink = (url: string) => {
+	if (radioApi.isE2E) {
+		Alert.alert("Externer Link", url);
+		return;
+	}
+
+	void Linking.openURL(url).catch(() => {
+		Alert.alert(
+			"Link konnte nicht geöffnet werden",
+			"Bitte versuche es später erneut.",
+		);
+	});
+};
+
 export default function Home() {
-	const { playing } = useIsPlaying();
-	const { push } = useRouter();
-
+	const playing = useIsPlaying();
 	const playerState = usePlaybackState();
-
-	useRecentTrackList();
-
-	useResetOnError();
-
+	const playbackRequested = useRef(playing);
+	const { push } = useRouter();
 	const { data } = useNowPlayingInfo();
+	const encodedTrackTitle = encodeURIComponent(
+		data?.currenttrack_title || "fallback",
+	);
 
 	useEffect(() => {
-		if (playerState.state === "error") {
-			TrackPlayer.reset();
+		if (playing) {
+			playbackRequested.current = true;
+		} else if (playerState !== PlaybackState.Buffering) {
+			playbackRequested.current = false;
 		}
-	}, [playerState.state]);
+	}, [playerState, playing]);
 
 	const [activeButton, setActiveButton] = useState<
 		| "whatsapp"
@@ -65,15 +77,15 @@ export default function Home() {
 		| boolean
 	>(false);
 
-	const handlePlayPress = async () => {
-		if (playing) {
-			await TrackPlayer.stop();
-		} else {
-			// Reset and re-add track to force fresh connection to live stream
-			await TrackPlayer.reset();
-			await TrackPlayer.add(TRACK);
-			await TrackPlayer.play();
-		}
+	const handlePlayPress = () => {
+		const shouldStop = playbackRequested.current;
+		playbackRequested.current = !shouldStop;
+		const command = shouldStop ? radioPlayer.stop() : radioPlayer.startFresh();
+
+		void command.catch((error) => {
+			playbackRequested.current = false;
+			console.error("Audio playback command failed", error);
+		});
 	};
 
 	return (
@@ -92,6 +104,7 @@ export default function Home() {
 				}}
 			/>
 			<SafeAreaView
+				testID="home_screen"
 				edges={["left", "right"]}
 				style={{
 					flex: 1,
@@ -120,12 +133,15 @@ export default function Home() {
 						}}
 					>
 						<Image
-							cachePolicy="none"
-							source={{
-								uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${
-									data?.currenttrack_title || "fallback"
-								}`,
-							}}
+							testID="now_playing_artwork"
+							cachePolicy="memory-disk"
+							source={
+								radioApi.isE2E
+									? require("../assets/images/icon.png")
+									: {
+											uri: `https://c32.radioboss.fm/w/artwork/152.jpg?title=${encodedTrackTitle}`,
+										}
+							}
 							alt="cover art"
 							style={{
 								width: COVER_SIZE,
@@ -142,6 +158,7 @@ export default function Home() {
 						}}
 					>
 						<Text
+							testID="now_playing_title"
 							style={{
 								fontSize: isSmallScreen ? 20 : 24,
 								fontWeight: "700",
@@ -156,6 +173,7 @@ export default function Home() {
 							{data?.currenttrack_title || "Radio Marl"}
 						</Text>
 						<Text
+							testID="now_playing_artist"
 							style={{
 								fontSize: isSmallScreen ? 14 : 16,
 								textAlign: "center",
@@ -168,8 +186,17 @@ export default function Home() {
 						</Text>
 					</View>
 					<Pressable
+						testID="playback_toggle"
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
+						accessibilityLabel={
+							playing ? "Wiedergabe stoppen" : "Radio abspielen"
+						}
+						accessibilityRole="button"
+						accessibilityState={{
+							busy: playerState === PlaybackState.Buffering,
+							selected: playing,
+						}}
 						onPressOut={() => setActiveButton(false)}
 						style={{
 							borderRadius: 9999,
@@ -182,8 +209,12 @@ export default function Home() {
 								activeButton === "playpause" ? "#7731EC" : "#112022",
 						}}
 					>
-						{playerState.state === "buffering" ? (
-							<ActivityIndicator size={isSmallScreen ? "small" : "large"} />
+						{playerState === PlaybackState.Buffering ? (
+							<ActivityIndicator
+								testID="playback_buffering"
+								color="white"
+								size={isSmallScreen ? "small" : "large"}
+							/>
 						) : playing ? (
 							<Pause fill="white" color="white" size={PLAY_ICON_SIZE} />
 						) : (
@@ -214,13 +245,16 @@ export default function Home() {
 							}}
 						>
 							<Pressable
+								testID="open_whatsapp"
 								onPress={() =>
-									Linking.openURL(
+									openExternalLink(
 										"https://chat.whatsapp.com/DpRbHu7DLEvG9zbkeZXknN",
 									)
 								}
 								onPressIn={() => setActiveButton("whatsapp")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="WhatsApp-Gruppe öffnen"
+								accessibilityRole="link"
 							>
 								<WhatsApp
 									viewBox="0 0 24 24"
@@ -231,11 +265,14 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
+								testID="open_facebook"
 								onPress={() =>
-									Linking.openURL("https://www.facebook.com/marlradio")
+									openExternalLink("https://www.facebook.com/marlradio")
 								}
 								onPressIn={() => setActiveButton("facebook")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Facebook öffnen"
+								accessibilityRole="link"
 							>
 								<Facebook
 									viewBox="0 0 24 24"
@@ -246,11 +283,14 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
+								testID="open_email"
 								onPress={() =>
-									Linking.openURL("mailto:thomas.wilke@radio-marl.de")
+									openExternalLink("mailto:thomas.wilke@radio-marl.de")
 								}
 								onPressIn={() => setActiveButton("mail")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="E-Mail schreiben"
+								accessibilityRole="link"
 							>
 								<Mail
 									width={ICON_SIZE}
@@ -259,9 +299,12 @@ export default function Home() {
 								/>
 							</Pressable>
 							<Pressable
-								onPress={() => Linking.openURL("https://marl-radio.de")}
+								testID="open_website"
+								onPress={() => openExternalLink("https://marl-radio.de")}
 								onPressIn={() => setActiveButton("globe")}
 								onPressOut={() => setActiveButton(false)}
+								accessibilityLabel="Radio-Marl-Webseite öffnen"
+								accessibilityRole="link"
 							>
 								<Globe
 									width={ICON_SIZE}
@@ -274,6 +317,7 @@ export default function Home() {
 							style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
 						>
 							<Pressable
+								testID="open_song_wish"
 								onPress={() => push("./songwish")}
 								onPressIn={() => setActiveButton("songwish")}
 								onPressOut={() => setActiveButton(false)}
@@ -309,6 +353,7 @@ export default function Home() {
 								)}
 							</Pressable>
 							<Pressable
+								testID="open_tracklist"
 								onPress={() => push("./tracklist")}
 								onPressIn={() => setActiveButton("tracklist")}
 								onPressOut={() => setActiveButton(false)}

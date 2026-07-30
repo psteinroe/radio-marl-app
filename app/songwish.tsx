@@ -4,6 +4,7 @@ import { Search, Star, X } from "lucide-react-native";
 import { useState } from "react";
 import {
 	ActivityIndicator,
+	Alert,
 	FlatList,
 	Pressable,
 	Text,
@@ -25,14 +26,27 @@ export default function SongWish() {
 	const [requestedSongs, setRequestedSongs] = useState<Set<number>>(new Set());
 	const [loadingSongId, setLoadingSongId] = useState<number | null>(null);
 
-	const { data: recentRequests, isLoading: recentLoading } =
-		useRecentRequests();
-	const { data: searchResults, isLoading: searchLoading } =
-		useSongSearch(searchQuery);
+	const {
+		data: recentRequests,
+		isError: recentError,
+		isLoading: recentLoading,
+		isRefetching: recentRefetching,
+		refetch: refetchRecent,
+	} = useRecentRequests();
+	const {
+		data: searchResults,
+		isError: searchError,
+		isLoading: searchLoading,
+		isDebouncing: searchDebouncing,
+		refetch: refetchSearch,
+	} = useSongSearch(searchQuery);
 	const requestMutation = useSongRequestMutation();
 
 	const isSearching = searchQuery.trim().length > 0;
-	const isLoading = isSearching ? searchLoading : recentLoading;
+	const isLoading = isSearching
+		? searchLoading || searchDebouncing
+		: recentLoading;
+	const isError = isSearching ? searchError : recentError;
 
 	const handleRequest = async (songId: number) => {
 		if (requestedSongs.has(songId)) return;
@@ -42,7 +56,11 @@ export default function SongWish() {
 			await requestMutation.mutateAsync(songId);
 			setRequestedSongs((prev) => new Set(prev).add(songId));
 		} catch {
-			// Silent fail - star just won't fill
+			Alert.alert(
+				"Songwunsch fehlgeschlagen",
+				"Der Wunsch konnte nicht gesendet werden. Bitte versuche es erneut.",
+				[{ text: "OK" }],
+			);
 		} finally {
 			setLoadingSongId(null);
 		}
@@ -62,9 +80,12 @@ export default function SongWish() {
 					headerTitle: "",
 					headerRight: () => (
 						<Pressable
+							testID="close_song_wish"
 							onPress={back}
 							onPressIn={() => setActiveButton("x")}
 							onPressOut={() => setActiveButton(false)}
+							accessibilityLabel="Songwünsche schließen"
+							accessibilityRole="button"
 						>
 							<X
 								width={32}
@@ -76,7 +97,11 @@ export default function SongWish() {
 					),
 				}}
 			/>
-			<SafeAreaView edges={["left", "right", "bottom"]} style={{ flex: 1 }}>
+			<SafeAreaView
+				testID="song_wish_screen"
+				edges={["left", "right", "bottom"]}
+				style={{ flex: 1 }}
+			>
 				{/* Search Input */}
 				<View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
 					<View
@@ -90,12 +115,15 @@ export default function SongWish() {
 					>
 						<Search width={20} height={20} color="#6F6F6F" />
 						<TextInput
+							testID="song_search_input"
 							placeholder="Song suchen..."
 							placeholderTextColor="#6F6F6F"
 							value={searchQuery}
 							onChangeText={setSearchQuery}
 							autoCapitalize="none"
 							autoCorrect={false}
+							returnKeyType="search"
+							submitBehavior="blurAndSubmit"
 							style={{
 								flex: 1,
 								paddingVertical: 12,
@@ -105,7 +133,12 @@ export default function SongWish() {
 							}}
 						/>
 						{isSearching && (
-							<Pressable onPress={clearSearch}>
+							<Pressable
+								testID="clear_song_search"
+								onPress={clearSearch}
+								accessibilityLabel="Songsuche löschen"
+								accessibilityRole="button"
+							>
 								<X width={20} height={20} color="#6F6F6F" />
 							</Pressable>
 						)}
@@ -114,7 +147,10 @@ export default function SongWish() {
 
 				{/* Section Header */}
 				<View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
-					<Text style={{ fontSize: 14, fontWeight: "500", color: "#6F6F6F" }}>
+					<Text
+						testID="song_wish_section_title"
+						style={{ fontSize: 14, fontWeight: "500", color: "#6F6F6F" }}
+					>
 						{isSearching ? "Suchergebnisse" : "Letzte Wünsche"}
 					</Text>
 				</View>
@@ -122,18 +158,56 @@ export default function SongWish() {
 				{/* Loading State */}
 				{isLoading ? (
 					<View
-						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 12,
+						}}
 					>
 						<ActivityIndicator size="large" color="#7731EC" />
+						<Text testID="song_wish_loading" style={{ color: "#6F6F6F" }}>
+							Songwünsche werden geladen …
+						</Text>
+					</View>
+				) : isError ? (
+					<View
+						testID="song_wish_error"
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 12,
+							padding: 24,
+						}}
+					>
+						<Text style={{ textAlign: "center", color: "#6F6F6F" }}>
+							Die Songwünsche konnten nicht geladen werden.
+						</Text>
+						<Pressable
+							testID="retry_song_wishes"
+							onPress={() =>
+								void (isSearching ? refetchSearch() : refetchRecent())
+							}
+							accessibilityLabel="Songwünsche erneut laden"
+							accessibilityRole="button"
+							style={{ padding: 12 }}
+						>
+							<Text style={{ color: "#7731EC", fontWeight: "600" }}>
+								Erneut versuchen
+							</Text>
+						</Pressable>
 					</View>
 				) : isSearching ? (
 					/* Search Results */
 					<FlatList
+						testID="song_search_results"
 						style={{ paddingHorizontal: 24 }}
 						data={searchResults || []}
 						keyExtractor={(item) => item.id.toString()}
 						ListEmptyComponent={
 							<Text
+								testID="song_search_empty"
 								style={{
 									textAlign: "center",
 									paddingVertical: 32,
@@ -149,6 +223,7 @@ export default function SongWish() {
 
 							return (
 								<View
+									testID={`song_search_result_${item.id}`}
 									style={{
 										flexDirection: "row",
 										alignItems: "center",
@@ -170,8 +245,25 @@ export default function SongWish() {
 										{item.title}
 									</Text>
 									<Pressable
+										testID={`request_song_${item.id}`}
 										onPress={() => handleRequest(item.id)}
-										disabled={isRequested || isLoadingThis}
+										disabled={
+											isRequested || isLoadingThis || requestMutation.isPending
+										}
+										accessibilityLabel={
+											isLoadingThis
+												? `Songwunsch wird gesendet: ${item.title}`
+												: isRequested
+													? `Gewünscht: ${item.title}`
+													: `Song wünschen: ${item.title}`
+										}
+										accessibilityRole="button"
+										accessibilityState={{
+											disabled:
+												isRequested ||
+												isLoadingThis ||
+												requestMutation.isPending,
+										}}
 										style={{
 											padding: 8,
 											alignItems: "center",
@@ -181,7 +273,11 @@ export default function SongWish() {
 										}}
 									>
 										{isLoadingThis ? (
-											<ActivityIndicator size="small" color="#7731EC" />
+											<ActivityIndicator
+												testID={`request_song_loading_${item.id}`}
+												size="small"
+												color="#7731EC"
+											/>
 										) : (
 											<Star
 												width={24}
@@ -198,11 +294,15 @@ export default function SongWish() {
 				) : (
 					/* Recent Requests */
 					<FlatList
+						testID="recent_song_wishes"
 						style={{ paddingHorizontal: 24 }}
 						data={recentRequests || []}
+						refreshing={recentRefetching}
+						onRefresh={() => void refetchRecent()}
 						keyExtractor={(item, index) => `${item.title}-${index}`}
 						ListEmptyComponent={
 							<Text
+								testID="recent_song_wishes_empty"
 								style={{
 									textAlign: "center",
 									paddingVertical: 32,
@@ -214,6 +314,7 @@ export default function SongWish() {
 						}
 						renderItem={({ item, index }) => (
 							<View
+								testID={`recent_song_wish_${index}`}
 								style={{
 									paddingVertical: 12,
 									borderBottomWidth: 1,

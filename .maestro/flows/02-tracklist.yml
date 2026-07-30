@@ -1,0 +1,49 @@
+appId: ${APP_ID}
+name: Tracklist error retry refresh and close
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 30000
+- tapOn:
+    id: "open_tracklist"
+- assertVisible:
+    id: "tracklist_screen"
+- extendedWaitUntil:
+    visible:
+      id: "tracklist_error"
+    timeout: 15000
+- assertVisible: "Die Wiedergabeliste konnte nicht geladen werden."
+- tapOn:
+    id: "retry_tracklist"
+- extendedWaitUntil:
+    visible:
+      id: "current_track"
+    timeout: 15000
+- assertVisible: "Maestro Current Track"
+- assertVisible: "Radio Marl Test"
+- assertVisible: "Maestro Previous Track"
+
+# The third fixture response is empty, exercising pull-to-refresh and empty UI.
+- swipe:
+    from:
+      id: "current_track"
+    direction: DOWN
+    duration: 1000
+- extendedWaitUntil:
+    visible:
+      id: "tracklist_empty"
+    timeout: 15000
+- assertVisible: "Noch keine Titel"
+- tapOn:
+    id: "close_tracklist"
+- assertVisible:
+    id: "home_screen"

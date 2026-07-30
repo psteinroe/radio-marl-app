@@ -1,26 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { radioApi } from "./radio-api";
 
-export type NowPlayingInfo = {
-	autodj_title: string;
-	autodj: boolean;
-	live: boolean;
-	nowplaying: string;
-	listeners: number;
-	nexttrack: string;
-	nexttrack_artist: string;
-	nexttrack_title: string;
-	currenttrack_artist: string;
-	currenttrack_title: string;
-};
+export type { NowPlayingInfo } from "./radio-api";
 
 export const nowPlayingInfoOpts = {
 	queryKey: ["nowplayinginfo"],
-	refetchInterval: 1000,
-	queryFn: async () => {
-		const res = await fetch("https://c32.radioboss.fm/w/nowplayinginfo?u=152");
-		if (!res.ok) throw new Error("Network response was not ok");
-		return res.json() as Promise<NowPlayingInfo>;
-	},
+	refetchInterval: 10_000,
+	refetchIntervalInBackground: false,
+	staleTime: 5_000,
+	queryFn: () => radioApi.getNowPlayingInfo(),
+	retry: radioApi.isE2E ? false : undefined,
 };
 
 export const useNowPlayingInfo = () => {

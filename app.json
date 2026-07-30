@@ -2,7 +2,7 @@
 	"expo": {
 		"name": "Radio Marl",
 		"slug": "radio-marl-app",
-		"version": "1.0.5",
+		"version": "1.1.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
 		"scheme": "radio-marl",
@@ -14,7 +14,6 @@
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"newArchEnabled": false,
 			"config": {
 				"usesNonExemptEncryption": false
 			},
@@ -25,14 +24,24 @@
 			}
 		},
 		"android": {
-			"newArchEnabled": false,
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#EEF2f2"
 			},
 			"package": "com.radio_marl.app"
 		},
-		"plugins": ["expo-router", "expo-font"],
+		"plugins": [
+			"expo-router",
+			"expo-font",
+			[
+				"expo-build-properties",
+				{
+					"ios": {
+						"deploymentTarget": "16.0"
+					}
+				}
+			]
+		],
 		"experiments": {
 			"typedRoutes": true
 		},
@@ -45,7 +54,9 @@
 			}
 		},
 		"owner": "radio-marl",
-		"runtimeVersion": "1.0.5",
+		"runtimeVersion": {
+			"policy": "appVersion"
+		},
 		"updates": {
 			"url": "https://u.expo.dev/db61a7c0-2fcb-4b6d-91f6-65dd4369e3c3"
 		}

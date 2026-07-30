@@ -1,0 +1,115 @@
+appId: ${APP_ID}
+name: Song wishes search request errors and close
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      platform: Android
+      visible: "System UI isn't responding"
+    commands:
+      - tapOn: "Wait"
+- extendedWaitUntil:
+    visible:
+      id: "home_screen"
+    timeout: 30000
+- tapOn:
+    id: "open_song_wish"
+- assertVisible:
+    id: "song_wish_screen"
+- extendedWaitUntil:
+    visible:
+      id: "song_wish_error"
+    timeout: 15000
+- assertVisible: "Die Songwünsche konnten nicht geladen werden."
+- tapOn:
+    id: "retry_song_wishes"
+- extendedWaitUntil:
+    visible: "Maestro Wunsch Eins"
+    timeout: 15000
+- assertVisible: "Maestro Wunsch Zwei"
+
+# Search results and both mutation outcomes are deterministic and never touch
+# the production song-request endpoint.
+- tapOn:
+    id: "song_search_input"
+- inputText: "maestro"
+- pressKey: enter
+- extendedWaitUntil:
+    visible:
+      id: "song_search_result_1001"
+    timeout: 15000
+- assertVisible: "Maestro Erfolg"
+- assertVisible: "Maestro Fehler"
+- tapOn:
+    id: "request_song_1001"
+- extendedWaitUntil:
+    visible: "Gewünscht: Maestro Erfolg"
+    timeout: 15000
+- assertVisible:
+    id: "request_song_1001"
+    enabled: false
+- assertVisible:
+    id: "request_song_1002"
+    enabled: true
+- tapOn:
+    id: "request_song_1002"
+- assertVisible: "Songwunsch fehlgeschlagen"
+- assertVisible: "Der Wunsch konnte nicht gesendet werden. Bitte versuche es erneut."
+- tapOn: "OK"
+
+# Clear returns to recent requests.
+- tapOn:
+    id: "clear_song_search"
+- assertVisible: "Letzte Wünsche"
+- assertVisible: "Maestro Wunsch Eins"
+
+# Empty search state.
+- tapOn:
+    id: "song_search_input"
+- inputText: "maestro leer"
+- pressKey: enter
+- extendedWaitUntil:
+    visible:
+      id: "song_search_empty"
+    timeout: 15000
+- assertVisible: "Keine Ergebnisse gefunden"
+- tapOn:
+    id: "clear_song_search"
+
+# Search error and retry interaction.
+- tapOn:
+    id: "song_search_input"
+- inputText: "maestro fehler"
+- pressKey: enter
+- extendedWaitUntil:
+    visible:
+      id: "song_wish_error"
+    timeout: 15000
+- tapOn:
+    id: "retry_song_wishes"
+- extendedWaitUntil:
+    visible:
+      id: "song_wish_error"
+    timeout: 15000
+- tapOn:
+    id: "clear_song_search"
+- extendedWaitUntil:
+    visible: "Maestro Wunsch Eins"
+    timeout: 15000
+
+# Pull-to-refresh reaches the deterministic recent-request empty state.
+- swipe:
+    from:
+      id: "recent_song_wish_0"
+    direction: DOWN
+    duration: 1000
+- extendedWaitUntil:
+    visible:
+      id: "recent_song_wishes_empty"
+    timeout: 15000
+- assertVisible: "Noch keine Wünsche"
+- tapOn:
+    id: "close_song_wish"
+- assertVisible:
+    id: "home_screen"

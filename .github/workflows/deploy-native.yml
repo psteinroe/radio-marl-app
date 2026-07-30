@@ -10,21 +10,26 @@ concurrency:
 jobs:
   deploy:
     name: Deploy Native
+    if: github.ref == 'refs/heads/main'
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    environment: production
     env:
       ENV: ${{ secrets.ENV }}
       SHA: ${{ github.sha }}
 
     steps:
       - name: 🏗 Setup repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 🏗 Setup repo
         uses: ./.github/actions/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: ✅ Validate
+        run: pnpm run validate
 
       - name: 🚀 Deploy
         run: pnpm run deploy:native
