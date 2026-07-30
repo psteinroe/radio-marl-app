@@ -34,7 +34,7 @@ name: Song wishes search request errors and close
 - tapOn:
     id: "song_search_input"
 - inputText: "maestro"
-- hideKeyboard
+- pressKey: enter
 - extendedWaitUntil:
     visible:
       id: "song_search_result_1001"
@@ -68,7 +68,7 @@ name: Song wishes search request errors and close
 - tapOn:
     id: "song_search_input"
 - inputText: "maestro leer"
-- hideKeyboard
+- pressKey: enter
 - extendedWaitUntil:
     visible:
       id: "song_search_empty"
@@ -81,7 +81,7 @@ name: Song wishes search request errors and close
 - tapOn:
     id: "song_search_input"
 - inputText: "maestro fehler"
-- hideKeyboard
+- pressKey: enter
 - extendedWaitUntil:
     visible:
       id: "song_wish_error"

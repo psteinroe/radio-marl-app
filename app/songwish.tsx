@@ -122,6 +122,8 @@ export default function SongWish() {
 							onChangeText={setSearchQuery}
 							autoCapitalize="none"
 							autoCorrect={false}
+							returnKeyType="search"
+							submitBehavior="blurAndSubmit"
 							style={{
 								flex: 1,
 								paddingVertical: 12,
