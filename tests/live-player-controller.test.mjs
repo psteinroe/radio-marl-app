@@ -4,90 +4,92 @@ import { createLivePlayerController } from "../lib/live-player-controller.ts";
 import { RADIO_PLAYER_CONFIG } from "../lib/radio-player-config.ts";
 
 class FakeLivePlayer {
+	activeTrack = null;
 	calls = [];
-	liveEdge = 0;
-	playedEdges = [];
 
-	async pause() {
-		this.calls.push("pause");
+	getActiveMediaItem() {
+		return this.activeTrack;
 	}
 
-	async play() {
+	play() {
 		this.calls.push("play");
-		this.playedEdges.push(this.liveEdge);
 	}
 
-	async seekToLiveEdge() {
-		this.calls.push("seekToLiveEdge");
-		this.liveEdge += 1;
-	}
-
-	async setMediaItem() {
+	setMediaItem(track) {
 		this.calls.push("setMediaItem");
-		this.liveEdge += 1;
+		this.activeTrack = track;
 	}
 
-	async stop() {
+	stop() {
 		this.calls.push("stop");
 	}
 }
 
-test("a UI start opens a fresh stream before playing", async () => {
+test("player setup retries media commands dropped before native readiness", async () => {
+	let attempts = 0;
+	let activeTrack = null;
+	const track = { mediaId: "radio", url: "live" };
+	const player = {
+		getActiveMediaItem: () => activeTrack,
+		setMediaItem: (nextTrack) => {
+			attempts += 1;
+			if (attempts === 2) activeTrack = nextTrack;
+		},
+	};
+	const controller = createLivePlayerController(player, track, {
+		prepareRetryMs: 0,
+	});
+
+	await controller.prepare();
+
+	assert.equal(attempts, 2);
+	assert.equal(activeTrack, track);
+});
+
+test("player setup fails instead of waiting indefinitely", async () => {
+	const player = {
+		getActiveMediaItem: () => null,
+		setMediaItem: () => undefined,
+	};
+	const controller = createLivePlayerController(
+		player,
+		{ mediaId: "radio" },
+		{ prepareAttempts: 2, prepareRetryMs: 0 },
+	);
+
+	await assert.rejects(controller.prepare(), /did not become ready/);
+});
+
+test("start refreshes the live stream before playing", async () => {
 	const player = new FakeLivePlayer();
-	const controller = createLivePlayerController(player, { url: "live" });
+	const controller = createLivePlayerController(player, { mediaId: "radio" });
 
 	await controller.startFresh();
 
 	assert.deepEqual(player.calls, ["setMediaItem", "play"]);
-	assert.deepEqual(player.playedEdges, [1]);
 });
 
-test("a JS resume moves to the live edge before playing", async () => {
+test("start and stop commands remain serialized", async () => {
 	const player = new FakeLivePlayer();
-	const controller = createLivePlayerController(player, { url: "live" });
+	const controller = createLivePlayerController(player, { mediaId: "radio" });
 
-	await controller.stop();
-	await controller.resumeAtLiveEdge();
+	await Promise.all([controller.startFresh(), controller.stop()]);
 
-	assert.deepEqual(player.calls, ["stop", "seekToLiveEdge", "play"]);
-	assert.deepEqual(player.playedEdges, [1]);
-});
-
-test("rapid player commands remain serialized", async () => {
-	let releaseSetMediaItem;
-	const setMediaItemBlocked = new Promise((resolve) => {
-		releaseSetMediaItem = resolve;
-	});
-	const player = new FakeLivePlayer();
-	player.setMediaItem = async function setMediaItem() {
-		this.calls.push("setMediaItem");
-		await setMediaItemBlocked;
-		this.liveEdge += 1;
-	};
-	const controller = createLivePlayerController(player, { url: "live" });
-
-	const start = controller.startFresh();
-	const stop = controller.stop();
-	await new Promise((resolve) => setImmediate(resolve));
-
-	assert.deepEqual(player.calls, ["setMediaItem"]);
-	releaseSetMediaItem();
-	await Promise.all([start, stop]);
 	assert.deepEqual(player.calls, ["setMediaItem", "play", "stop"]);
 });
 
 test("a rejected command does not poison later player commands", async () => {
 	const player = new FakeLivePlayer();
-	player.stop = async function stop() {
+	player.stop = function stop() {
 		this.calls.push("stop");
 		throw new Error("native stop failed");
 	};
-	const controller = createLivePlayerController(player, { url: "live" });
+	const controller = createLivePlayerController(player, { mediaId: "radio" });
 
 	await assert.rejects(controller.stop(), /native stop failed/);
-	await controller.resumeAtLiveEdge();
+	await controller.startFresh();
 
-	assert.deepEqual(player.calls, ["stop", "seekToLiveEdge", "play"]);
+	assert.deepEqual(player.calls, ["stop", "setMediaItem", "play"]);
 });
 
 test("native remote controls are configured to resume at the live edge", () => {

@@ -29,7 +29,7 @@ Use `pnpm start:ios` or `pnpm start:android` after installing a development clie
 
 ## End-to-end tests
 
-Maestro tests cover the complete app surface on Android and iOS: home metadata and external-link wiring, tracklist loading/error/retry/refresh/empty states, song search and request outcomes, repeated real-stream start/stop cycles, and background/foreground playback. GitHub Actions runs both platforms whenever a pull request is opened, reopened, or updated, and after changes land on `main`. Each job generates and builds a standalone release app, so Metro and a paid EAS plan are not required. JUnit results and Maestro debug output are uploaded as workflow artifacts.
+Maestro tests cover the complete app surface on Android and iOS: home metadata and external-link wiring, tracklist loading/error/retry/refresh/empty states, song search and request outcomes, immediate playback loading and cancellation, repeated real-stream start/stop cycles, and background/foreground playback. GitHub Actions runs both platforms whenever a pull request is opened, reopened, or updated, and after changes land on `main`. Each job generates and builds a standalone release app, so Metro and a paid EAS plan are not required. JUnit results and Maestro debug output are uploaded as workflow artifacts.
 
 To run a flow locally, build and install the corresponding `e2e-test` profile on an emulator or simulator, install [Maestro CLI](https://docs.maestro.dev/maestro-cli/how-to-install-maestro-cli), then run:
 
@@ -39,7 +39,7 @@ pnpm run e2e:android
 pnpm run e2e:ios
 ```
 
-The shared suite entrypoint is `.maestro/suite.yml`, with focused journeys in `.maestro/flows`; each platform script supplies its app identifier. E2E builds set `EXPO_PUBLIC_E2E=true`, which replaces mutable RadioBoss API data and operating-system link handoffs with deterministic fixtures. The player flow intentionally retains the real Radio Marl stream. Maestro can verify that RNTP reaches and retains its playing state, but it cannot prove audible output or exact live-edge position; keep those checks in the real-device release checklist. The CI workflow is `.github/workflows/e2e.yml`.
+The shared suite entrypoint is `.maestro/suite.yml`, with focused journeys in `.maestro/flows`; each platform script supplies its app identifier. E2E builds set `EXPO_PUBLIC_E2E=true`, which replaces mutable RadioBoss API data and operating-system link handoffs with deterministic fixtures. They also add a one-time cancellable playback-start hold so Maestro can reliably observe the immediate loading state. Retries and lifecycle checks still use the production path and real Radio Marl stream. Maestro can verify that RNTP reaches and retains its playing state, but it cannot prove audible output or exact live-edge position; keep those checks in the real-device release checklist. The CI workflow is `.github/workflows/e2e.yml`.
 
 ## Audio behavior
 

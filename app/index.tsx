@@ -1,4 +1,9 @@
-import { PlaybackState, useIsPlaying, usePlaybackState } from "@rntp/player";
+import TrackPlayer, {
+	Event,
+	PlaybackState,
+	useIsPlaying,
+	usePlaybackState,
+} from "@rntp/player";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
@@ -33,6 +38,8 @@ const PLAY_BUTTON_SIZE = isSmallScreen ? 60 : 72;
 const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
+const PLAYBACK_START_TIMEOUT_MS = 15_000;
+const E2E_PLAYBACK_START_DELAY_MS = 12_000;
 
 const openExternalLink = (url: string) => {
 	if (radioApi.isE2E) {
@@ -52,20 +59,9 @@ export default function Home() {
 	const playing = useIsPlaying();
 	const playerState = usePlaybackState();
 	const playbackRequested = useRef(playing);
-	const { push } = useRouter();
-	const { data } = useNowPlayingInfo();
-	const encodedTrackTitle = encodeURIComponent(
-		data?.currenttrack_title || "fallback",
-	);
-
-	useEffect(() => {
-		if (playing) {
-			playbackRequested.current = true;
-		} else if (playerState !== PlaybackState.Buffering) {
-			playbackRequested.current = false;
-		}
-	}, [playerState, playing]);
-
+	const playbackRequestId = useRef(0);
+	const e2eStartDelayUsed = useRef(false);
+	const [playbackStarting, setPlaybackStarting] = useState(false);
 	const [activeButton, setActiveButton] = useState<
 		| "whatsapp"
 		| "facebook"
@@ -76,17 +72,90 @@ export default function Home() {
 		| "playpause"
 		| boolean
 	>(false);
+	const { push } = useRouter();
+	const { data } = useNowPlayingInfo();
+	const encodedTrackTitle = encodeURIComponent(
+		data?.currenttrack_title || "fallback",
+	);
+
+	useEffect(() => {
+		if (playing) {
+			playbackRequested.current = true;
+			setPlaybackStarting(false);
+		} else if (!playbackStarting && playerState !== PlaybackState.Buffering) {
+			playbackRequested.current = false;
+		}
+	}, [playerState, playbackStarting, playing]);
+
+	useEffect(() => {
+		if (!playbackStarting) return;
+
+		const timeout = setTimeout(() => {
+			playbackRequested.current = false;
+			setPlaybackStarting(false);
+			void radioPlayer.stop().catch((error) => {
+				console.error("Audio playback timeout cleanup failed", error);
+			});
+			Alert.alert(
+				"Wiedergabe nicht möglich",
+				"Der Stream konnte nicht gestartet werden. Bitte versuche es erneut.",
+			);
+		}, PLAYBACK_START_TIMEOUT_MS);
+
+		return () => clearTimeout(timeout);
+	}, [playbackStarting]);
+
+	useEffect(() => {
+		const subscription = TrackPlayer.addEventListener(
+			Event.PlaybackError,
+			(error) => {
+				playbackRequested.current = false;
+				setPlaybackStarting(false);
+				console.error("Audio playback failed", error);
+				Alert.alert(
+					"Wiedergabe fehlgeschlagen",
+					"Bitte prüfe deine Verbindung und versuche es erneut.",
+				);
+			},
+		);
+		return () => subscription.remove();
+	}, []);
 
 	const handlePlayPress = () => {
+		const requestId = ++playbackRequestId.current;
 		const shouldStop = playbackRequested.current;
 		playbackRequested.current = !shouldStop;
-		const command = shouldStop ? radioPlayer.stop() : radioPlayer.startFresh();
+		setPlaybackStarting(!shouldStop);
+
+		const startPlayback = () => {
+			if (!radioApi.isE2E || e2eStartDelayUsed.current) {
+				return radioPlayer.startFresh();
+			}
+
+			// Make the first E2E start cancellable and observable. Retries use the
+			// production path so the real-stream lifecycle test stays representative.
+			e2eStartDelayUsed.current = true;
+			return new Promise<void>((resolve) =>
+				setTimeout(resolve, E2E_PLAYBACK_START_DELAY_MS),
+			).then(() => {
+				if (playbackRequestId.current === requestId) {
+					return radioPlayer.startFresh();
+				}
+			});
+		};
+
+		const command = shouldStop ? radioPlayer.stop() : startPlayback();
 
 		void command.catch((error) => {
 			playbackRequested.current = false;
+			setPlaybackStarting(false);
 			console.error("Audio playback command failed", error);
+			Alert.alert("Wiedergabe fehlgeschlagen", "Bitte versuche es erneut.");
 		});
 	};
+
+	const playbackBusy =
+		playbackStarting || playerState === PlaybackState.Buffering;
 
 	return (
 		<>
@@ -190,11 +259,15 @@ export default function Home() {
 						onPress={handlePlayPress}
 						onPressIn={() => setActiveButton("playpause")}
 						accessibilityLabel={
-							playing ? "Wiedergabe stoppen" : "Radio abspielen"
+							playbackStarting
+								? "Wiedergabestart abbrechen"
+								: playing
+									? "Wiedergabe stoppen"
+									: "Radio abspielen"
 						}
 						accessibilityRole="button"
 						accessibilityState={{
-							busy: playerState === PlaybackState.Buffering,
+							busy: playbackBusy,
 							selected: playing,
 						}}
 						onPressOut={() => setActiveButton(false)}
@@ -209,7 +282,7 @@ export default function Home() {
 								activeButton === "playpause" ? "#7731EC" : "#112022",
 						}}
 					>
-						{playerState === PlaybackState.Buffering ? (
+						{playbackBusy ? (
 							<ActivityIndicator
 								testID="playback_buffering"
 								color="white"
