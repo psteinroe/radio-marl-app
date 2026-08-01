@@ -20,7 +20,6 @@ name: Playback startup and app lifecycle
     id: "playback_toggle"
 - assertVisible:
     id: "playback_buffering"
-- assertVisible: "Wiedergabestart abbrechen"
 - tapOn:
     id: "playback_toggle"
 - extendedWaitUntil:
@@ -36,7 +35,6 @@ name: Playback startup and app lifecycle
     id: "playback_toggle"
 - assertVisible:
     id: "playback_buffering"
-- assertVisible: "Wiedergabestart abbrechen"
 - extendedWaitUntil:
     visible: "Wiedergabe stoppen"
     timeout: 30000

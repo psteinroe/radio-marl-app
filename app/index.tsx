@@ -39,7 +39,7 @@ const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 const PLAYBACK_START_TIMEOUT_MS = 15_000;
-const E2E_PLAYBACK_START_DELAY_MS = 2_000;
+const E2E_PLAYBACK_START_DELAY_MS = 5_000;
 
 const openExternalLink = (url: string) => {
 	if (radioApi.isE2E) {
