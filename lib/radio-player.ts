@@ -14,4 +14,16 @@ export const RADIO_TRACK: MediaItem = {
 	mimeType: "audio/mpeg",
 };
 
-export const radioPlayer = createLivePlayerController(TrackPlayer, RADIO_TRACK);
+// Let the loading state paint before synchronous native stream preparation.
+const waitForPlaybackFeedbackPaint = () =>
+	new Promise<void>((resolve) => {
+		requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+	});
+
+export const radioPlayer = createLivePlayerController(
+	TrackPlayer,
+	RADIO_TRACK,
+	{
+		beforeStart: waitForPlaybackFeedbackPaint,
+	},
+);

@@ -10,6 +10,7 @@ export interface LivePlayerAdapter<Track> {
 }
 
 interface LivePlayerControllerOptions {
+	beforeStart?: () => Awaitable;
 	prepareAttempts?: number;
 	prepareRetryMs?: number;
 }
@@ -19,6 +20,7 @@ export function createLivePlayerController<Track extends MediaTrack>(
 	player: LivePlayerAdapter<Track>,
 	track: Track,
 	{
+		beforeStart = () => undefined,
 		prepareAttempts = 200,
 		prepareRetryMs = 50,
 	}: LivePlayerControllerOptions = {},
@@ -53,6 +55,7 @@ export function createLivePlayerController<Track extends MediaTrack>(
 		prepare: () => run(prepare),
 		startFresh: () =>
 			run(async () => {
+				await beforeStart();
 				await prepare();
 				await player.play();
 			}),
