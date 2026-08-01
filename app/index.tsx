@@ -39,7 +39,7 @@ const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 const PLAYBACK_START_TIMEOUT_MS = 15_000;
-const E2E_PLAYBACK_START_DELAY_MS = 8_000;
+const E2E_PLAYBACK_START_DELAY_MS = 12_000;
 
 const openExternalLink = (url: string) => {
 	if (radioApi.isE2E) {
@@ -93,7 +93,7 @@ export default function Home() {
 		const timeout = setTimeout(() => {
 			playbackRequested.current = false;
 			setPlaybackStarting(false);
-			void radioPlayer.pause().catch((error) => {
+			void radioPlayer.stop().catch((error) => {
 				console.error("Audio playback timeout cleanup failed", error);
 			});
 			Alert.alert(
@@ -123,13 +123,13 @@ export default function Home() {
 
 	const handlePlayPress = () => {
 		const requestId = ++playbackRequestId.current;
-		const shouldPause = playbackRequested.current;
-		playbackRequested.current = !shouldPause;
-		setPlaybackStarting(!shouldPause);
+		const shouldStop = playbackRequested.current;
+		playbackRequested.current = !shouldStop;
+		setPlaybackStarting(!shouldStop);
 
 		const startPlayback = () => {
 			if (!radioApi.isE2E || e2eStartDelayUsed.current) {
-				return radioPlayer.play();
+				return radioPlayer.startFresh();
 			}
 
 			// Make the first E2E start cancellable and observable. Retries use the
@@ -138,11 +138,13 @@ export default function Home() {
 			return new Promise<void>((resolve) =>
 				setTimeout(resolve, E2E_PLAYBACK_START_DELAY_MS),
 			).then(() => {
-				if (playbackRequestId.current === requestId) return radioPlayer.play();
+				if (playbackRequestId.current === requestId) {
+					return radioPlayer.startFresh();
+				}
 			});
 		};
 
-		const command = shouldPause ? radioPlayer.pause() : startPlayback();
+		const command = shouldStop ? radioPlayer.stop() : startPlayback();
 
 		void command.catch((error) => {
 			playbackRequested.current = false;

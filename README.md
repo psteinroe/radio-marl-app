@@ -29,7 +29,7 @@ Use `pnpm start:ios` or `pnpm start:android` after installing a development clie
 
 ## End-to-end tests
 
-Maestro tests cover the complete app surface on Android and iOS: home metadata and external-link wiring, tracklist loading/error/retry/refresh/empty states, song search and request outcomes, immediate playback loading and cancellation, repeated real-stream start/pause cycles, and background/foreground playback. GitHub Actions runs both platforms whenever a pull request is opened, reopened, or updated, and after changes land on `main`. Each job generates and builds a standalone release app, so Metro and a paid EAS plan are not required. JUnit results and Maestro debug output are uploaded as workflow artifacts.
+Maestro tests cover the complete app surface on Android and iOS: home metadata and external-link wiring, tracklist loading/error/retry/refresh/empty states, song search and request outcomes, immediate playback loading and cancellation, repeated real-stream start/stop cycles, and background/foreground playback. GitHub Actions runs both platforms whenever a pull request is opened, reopened, or updated, and after changes land on `main`. Each job generates and builds a standalone release app, so Metro and a paid EAS plan are not required. JUnit results and Maestro debug output are uploaded as workflow artifacts.
 
 To run a flow locally, build and install the corresponding `e2e-test` profile on an emulator or simulator, install [Maestro CLI](https://docs.maestro.dev/maestro-cli/how-to-install-maestro-cli), then run:
 

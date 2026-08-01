@@ -4,9 +4,9 @@ type MediaTrack = { mediaId?: string };
 
 export interface LivePlayerAdapter<Track> {
 	getActiveMediaItem(): Track | null;
-	pause(): Awaitable;
 	play(): Awaitable;
 	setMediaItem(track: Track): Awaitable;
+	stop(): Awaitable;
 }
 
 interface LivePlayerControllerOptions {
@@ -51,7 +51,11 @@ export function createLivePlayerController<Track extends MediaTrack>(
 
 	return {
 		prepare: () => run(prepare),
-		play: () => run(() => player.play()),
-		pause: () => run(() => player.pause()),
+		startFresh: () =>
+			run(async () => {
+				await prepare();
+				await player.play();
+			}),
+		stop: () => run(() => player.stop()),
 	};
 }

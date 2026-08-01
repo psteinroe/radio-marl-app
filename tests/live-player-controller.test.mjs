@@ -11,10 +11,6 @@ class FakeLivePlayer {
 		return this.activeTrack;
 	}
 
-	pause() {
-		this.calls.push("pause");
-	}
-
 	play() {
 		this.calls.push("play");
 	}
@@ -22,6 +18,10 @@ class FakeLivePlayer {
 	setMediaItem(track) {
 		this.calls.push("setMediaItem");
 		this.activeTrack = track;
+	}
+
+	stop() {
+		this.calls.push("stop");
 	}
 }
 
@@ -60,27 +60,36 @@ test("player setup fails instead of waiting indefinitely", async () => {
 	await assert.rejects(controller.prepare(), /did not become ready/);
 });
 
-test("play and pause commands remain serialized", async () => {
+test("start refreshes the live stream before playing", async () => {
 	const player = new FakeLivePlayer();
 	const controller = createLivePlayerController(player, { mediaId: "radio" });
 
-	await Promise.all([controller.play(), controller.pause()]);
+	await controller.startFresh();
 
-	assert.deepEqual(player.calls, ["play", "pause"]);
+	assert.deepEqual(player.calls, ["setMediaItem", "play"]);
+});
+
+test("start and stop commands remain serialized", async () => {
+	const player = new FakeLivePlayer();
+	const controller = createLivePlayerController(player, { mediaId: "radio" });
+
+	await Promise.all([controller.startFresh(), controller.stop()]);
+
+	assert.deepEqual(player.calls, ["setMediaItem", "play", "stop"]);
 });
 
 test("a rejected command does not poison later player commands", async () => {
 	const player = new FakeLivePlayer();
-	player.pause = function pause() {
-		this.calls.push("pause");
-		throw new Error("native pause failed");
+	player.stop = function stop() {
+		this.calls.push("stop");
+		throw new Error("native stop failed");
 	};
 	const controller = createLivePlayerController(player, { mediaId: "radio" });
 
-	await assert.rejects(controller.pause(), /native pause failed/);
-	await controller.play();
+	await assert.rejects(controller.stop(), /native stop failed/);
+	await controller.startFresh();
 
-	assert.deepEqual(player.calls, ["pause", "play"]);
+	assert.deepEqual(player.calls, ["stop", "setMediaItem", "play"]);
 });
 
 test("native remote controls are configured to resume at the live edge", () => {
