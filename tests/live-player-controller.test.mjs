@@ -60,6 +60,27 @@ test("player setup fails instead of waiting indefinitely", async () => {
 	await assert.rejects(controller.prepare(), /did not become ready/);
 });
 
+test("start waits for the feedback paint boundary before native work", async () => {
+	let releaseStart;
+	const startAllowed = new Promise((resolve) => {
+		releaseStart = resolve;
+	});
+	const player = new FakeLivePlayer();
+	const controller = createLivePlayerController(
+		player,
+		{ mediaId: "radio" },
+		{ beforeStart: () => startAllowed },
+	);
+
+	const start = controller.startFresh();
+	await new Promise((resolve) => setImmediate(resolve));
+	assert.deepEqual(player.calls, []);
+
+	releaseStart();
+	await start;
+	assert.deepEqual(player.calls, ["setMediaItem", "play"]);
+});
+
 test("start refreshes the live stream before playing", async () => {
 	const player = new FakeLivePlayer();
 	const controller = createLivePlayerController(player, { mediaId: "radio" });
