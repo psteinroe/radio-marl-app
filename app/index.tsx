@@ -39,6 +39,7 @@ const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 const PLAYBACK_START_TIMEOUT_MS = 15_000;
+const E2E_PLAYBACK_START_DELAY_MS = 2_000;
 
 const openExternalLink = (url: string) => {
 	if (radioApi.isE2E) {
@@ -58,6 +59,7 @@ export default function Home() {
 	const playing = useIsPlaying();
 	const playerState = usePlaybackState();
 	const playbackRequested = useRef(playing);
+	const playbackRequestId = useRef(0);
 	const [playbackStarting, setPlaybackStarting] = useState(false);
 	const [activeButton, setActiveButton] = useState<
 		| "whatsapp"
@@ -119,10 +121,24 @@ export default function Home() {
 	}, []);
 
 	const handlePlayPress = () => {
+		const requestId = ++playbackRequestId.current;
 		const shouldPause = playbackRequested.current;
 		playbackRequested.current = !shouldPause;
 		setPlaybackStarting(!shouldPause);
-		const command = shouldPause ? radioPlayer.pause() : radioPlayer.play();
+
+		const startPlayback = () => {
+			if (!radioApi.isE2E) return radioPlayer.play();
+
+			// Keep transient start/cancel feedback observable in release-mode E2E
+			// builds without replacing the real stream integration.
+			return new Promise<void>((resolve) =>
+				setTimeout(resolve, E2E_PLAYBACK_START_DELAY_MS),
+			).then(() => {
+				if (playbackRequestId.current === requestId) return radioPlayer.play();
+			});
+		};
+
+		const command = shouldPause ? radioPlayer.pause() : startPlayback();
 
 		void command.catch((error) => {
 			playbackRequested.current = false;

@@ -1,5 +1,5 @@
 appId: ${APP_ID}
-name: Real stream playback and app lifecycle
+name: Playback startup and app lifecycle
 ---
 - launchApp:
     clearState: true
@@ -15,11 +15,28 @@ name: Real stream playback and app lifecycle
     timeout: 30000
 - assertVisible: "Radio abspielen"
 
+# Starting feedback appears immediately and can be cancelled before RNTP plays.
+- tapOn:
+    id: "playback_toggle"
+- assertVisible:
+    id: "playback_buffering"
+- assertVisible: "Wiedergabestart abbrechen"
+- tapOn:
+    id: "playback_toggle"
+- extendedWaitUntil:
+    visible: "Radio abspielen"
+    timeout: 5000
+- assertNotVisible:
+    id: "playback_buffering"
+
 # This flow intentionally retains the real stream integration. Playing is the
 # strongest portable signal available to Maestro; audible output still needs a
 # real-device check.
 - tapOn:
     id: "playback_toggle"
+- assertVisible:
+    id: "playback_buffering"
+- assertVisible: "Wiedergabestart abbrechen"
 - extendedWaitUntil:
     visible: "Wiedergabe stoppen"
     timeout: 30000
@@ -43,7 +60,7 @@ name: Real stream playback and app lifecycle
     visible: "Radio abspielen"
     timeout: 15000
 
-# A second complete cycle catches stale native state after stopping.
+# A second complete cycle catches stale native state after pausing.
 - tapOn:
     id: "playback_toggle"
 - extendedWaitUntil:
