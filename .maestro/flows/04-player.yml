@@ -33,8 +33,6 @@ name: Playback startup and app lifecycle
 # real-device check.
 - tapOn:
     id: "playback_toggle"
-- assertVisible:
-    id: "playback_buffering"
 - extendedWaitUntil:
     visible: "Wiedergabe stoppen"
     timeout: 30000

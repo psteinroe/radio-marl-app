@@ -39,7 +39,7 @@ const PLAY_ICON_SIZE = isSmallScreen ? 28 : 34;
 const SPACING = isSmallScreen ? 10 : 16;
 const ICON_SIZE = isSmallScreen ? 24 : 28;
 const PLAYBACK_START_TIMEOUT_MS = 15_000;
-const E2E_PLAYBACK_START_DELAY_MS = 5_000;
+const E2E_PLAYBACK_START_DELAY_MS = 8_000;
 
 const openExternalLink = (url: string) => {
 	if (radioApi.isE2E) {
@@ -60,6 +60,7 @@ export default function Home() {
 	const playerState = usePlaybackState();
 	const playbackRequested = useRef(playing);
 	const playbackRequestId = useRef(0);
+	const e2eStartDelayUsed = useRef(false);
 	const [playbackStarting, setPlaybackStarting] = useState(false);
 	const [activeButton, setActiveButton] = useState<
 		| "whatsapp"
@@ -127,10 +128,13 @@ export default function Home() {
 		setPlaybackStarting(!shouldPause);
 
 		const startPlayback = () => {
-			if (!radioApi.isE2E) return radioPlayer.play();
+			if (!radioApi.isE2E || e2eStartDelayUsed.current) {
+				return radioPlayer.play();
+			}
 
-			// Keep transient start/cancel feedback observable in release-mode E2E
-			// builds without replacing the real stream integration.
+			// Make the first E2E start cancellable and observable. Retries use the
+			// production path so the real-stream lifecycle test stays representative.
+			e2eStartDelayUsed.current = true;
 			return new Promise<void>((resolve) =>
 				setTimeout(resolve, E2E_PLAYBACK_START_DELAY_MS),
 			).then(() => {
