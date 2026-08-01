@@ -1,17 +1,27 @@
 type Awaitable<T = unknown> = T | Promise<T>;
 
+type MediaTrack = { mediaId?: string };
+
 export interface LivePlayerAdapter<Track> {
+	getActiveMediaItem(): Track | null;
 	pause(): Awaitable;
 	play(): Awaitable;
-	seekToLiveEdge(): Awaitable;
 	setMediaItem(track: Track): Awaitable;
-	stop(): Awaitable;
+}
+
+interface LivePlayerControllerOptions {
+	prepareAttempts?: number;
+	prepareRetryMs?: number;
 }
 
 /** Serializes player commands so rapid UI/background actions cannot race. */
-export function createLivePlayerController<Track>(
+export function createLivePlayerController<Track extends MediaTrack>(
 	player: LivePlayerAdapter<Track>,
 	track: Track,
+	{
+		prepareAttempts = 200,
+		prepareRetryMs = 50,
+	}: LivePlayerControllerOptions = {},
 ) {
 	let pending = Promise.resolve();
 
@@ -24,18 +34,24 @@ export function createLivePlayerController<Track>(
 		return result;
 	};
 
+	const isExpectedTrack = (activeTrack: Track | null) =>
+		activeTrack === track ||
+		(track.mediaId !== undefined && activeTrack?.mediaId === track.mediaId);
+
+	const prepare = async () => {
+		for (let attempt = 0; attempt < prepareAttempts; attempt += 1) {
+			await player.setMediaItem(track);
+			if (isExpectedTrack(player.getActiveMediaItem())) return;
+			if (attempt < prepareAttempts - 1) {
+				await new Promise((resolve) => setTimeout(resolve, prepareRetryMs));
+			}
+		}
+		throw new Error("Audio player did not become ready");
+	};
+
 	return {
-		startFresh: () =>
-			run(async () => {
-				await player.setMediaItem(track);
-				await player.play();
-			}),
-		resumeAtLiveEdge: () =>
-			run(async () => {
-				await player.seekToLiveEdge();
-				await player.play();
-			}),
+		prepare: () => run(prepare),
+		play: () => run(() => player.play()),
 		pause: () => run(() => player.pause()),
-		stop: () => run(() => player.stop()),
 	};
 }

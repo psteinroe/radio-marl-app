@@ -4,25 +4,28 @@ import TrackPlayer, {
 	RepeatMode,
 } from "@rntp/player";
 import { useEffect, useState } from "react";
-import { RADIO_TRACK } from "./radio-player";
+import { radioPlayer } from "./radio-player";
 import { RADIO_PLAYER_CONFIG } from "./radio-player-config";
 
 let initialized = false;
+let initialization: Promise<void> | undefined;
 
 function initializePlayer() {
-	if (initialized) return;
+	initialization ??= Promise.resolve().then(async () => {
+		TrackPlayer.setupPlayer(RADIO_PLAYER_CONFIG satisfies PlayerConfig);
+		await radioPlayer.prepare();
 
-	TrackPlayer.setupPlayer(RADIO_PLAYER_CONFIG satisfies PlayerConfig);
-	initialized = true;
-
-	// Native handling keeps controls responsive when JS is suspended and applies
-	// liveResumeBehavior to lock-screen, notification, Auto, and CarPlay actions.
-	TrackPlayer.setCommands({
-		capabilities: [PlayerCommand.PlayPause],
-		handling: "native",
+		// Configure controls only after Android's asynchronous MediaController is
+		// available; commands sent before then are silently discarded by RNTP.
+		TrackPlayer.setCommands({
+			capabilities: [PlayerCommand.PlayPause],
+			handling: "native",
+		});
+		TrackPlayer.setRepeatMode(RepeatMode.Off);
+		initialized = true;
 	});
-	TrackPlayer.setRepeatMode(RepeatMode.Off);
-	TrackPlayer.setMediaItem(RADIO_TRACK);
+
+	return initialization;
 }
 
 export function useSetupPlayer() {
@@ -30,14 +33,23 @@ export function useSetupPlayer() {
 	const [setupError, setSetupError] = useState<Error | null>(null);
 
 	useEffect(() => {
-		try {
-			initializePlayer();
-			setPlayerReady(true);
-		} catch (error) {
-			setSetupError(
-				error instanceof Error ? error : new Error("Audio player setup failed"),
-			);
-		}
+		let mounted = true;
+		void initializePlayer().then(
+			() => {
+				if (mounted) setPlayerReady(true);
+			},
+			(error) => {
+				if (!mounted) return;
+				setSetupError(
+					error instanceof Error
+						? error
+						: new Error("Audio player setup failed"),
+				);
+			},
+		);
+		return () => {
+			mounted = false;
+		};
 	}, []);
 
 	if (setupError) throw setupError;
